@@ -1,11 +1,17 @@
 {
   "name": "smiles-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generate sequences of SMILES objects",
+  "repository": "git@bitbucket.org:matthewjumpsoffbuildings/smiles-generator.git",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cli-progress": "^2.1.0",
+    "command-line-args": "^5.0.2",
+    "fs-extra": "^7.0.0"
+  }
 }
