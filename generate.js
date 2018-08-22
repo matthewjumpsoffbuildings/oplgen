@@ -43,7 +43,7 @@ if(subunits.length < 1){
 }
 
 // make sure the specified sequence length is long enough to generate enough unique sequences
-if(sequenceLength ** subunits.length < sequencesNeeded){
+if(subunits.length ** sequenceLength < sequencesNeeded){
 	console.log(`Your specified sequence length of ${sequenceLength} is too short to generate ${sequencesNeeded} unique sequences`)
 	process.exit()
 }
