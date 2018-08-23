@@ -7,17 +7,22 @@ const options = commandLineArgs([
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 	{ name: 'outputDirectory', alias: 'o', type: String, defaultValue: "output" },
 	{ name: 'subunitsDirectory', alias: 's', type: String, defaultValue: "subunits" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" }
+	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
+	{ name: 'linear', type: Boolean, defaultValue: false }
 ])
+
+const TYPE_LINEAR = 'linear'
+const TYPE_RING = 'ring'
 
 const sequencesNeeded = options.numOfSequences
 const sequenceLength = options.sequenceLength
 const outputDirectory = options.outputDirectory
 const subunitsDirectory = options.subunitsDirectory
 const delimiter = options.delimiter
+const sequenceType = options.linear ? TYPE_LINEAR : TYPE_RING
 
 // log out the current settings
-console.log(`\nGenerating ${sequencesNeeded} sequences of length ${sequenceLength}`)
+console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
 console.log(`Using subunit SMILES files from the '${subunitsDirectory}' folder`)
 console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
@@ -85,15 +90,21 @@ while(sequences.length < sequencesNeeded){
 	}
 
 	// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
-	for(i = 0; i <sequenceLength; i++){
-		sequenceIndexArray.unshift(sequenceIndexArray.pop())
-		sequenceIndexString = sequenceIndexArray.join(",")
-		sequencesHash[sequenceIndexString] = true
+	if(sequenceType == TYPE_RING){
+		for(i = 0; i <sequenceLength; i++){
+			sequenceIndexArray.unshift(sequenceIndexArray.pop())
+			sequenceIndexString = sequenceIndexArray.join(",")
+			sequencesHash[sequenceIndexString] = true
+		}
 	}
 
-	// add 1s to make closed loop
-	sequenceString = sequenceString.replace(/^(.)/i, '$&1') // add 1 after first character
-	sequenceString = sequenceString.replace(/\(=O\)$/i, '1(=O)') // add 1 after last (=O)
+	// add terminators etc
+	if(sequenceType == TYPE_RING){
+		sequenceString = sequenceString.replace(/^(.)/i, '$&1') // add 1 after first character
+		sequenceString = sequenceString.replace(/\(=O\)$/i, '1(=O)') // add 1 after last (=O)
+	} else {
+		sequenceString += "O"
+	}
 
 	// store sequence in array
 	sequences.push(sequenceString)
