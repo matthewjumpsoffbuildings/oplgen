@@ -11,15 +11,15 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: false }
 ])
 
-const TYPE_LINEAR = 'linear'
-const TYPE_RING = 'ring'
+const TYPE_LINEAR = 'lin'
+const TYPE_CYCLIC = 'cyc'
 
 const sequencesNeeded = options.numOfSequences
 const sequenceLength = options.sequenceLength
 const outputDirectory = options.outputDirectory
 const subunitsDirectory = options.subunitsDirectory
 const delimiter = options.delimiter
-const sequenceType = options.linear ? TYPE_LINEAR : TYPE_RING
+const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
 
 // log out the current settings
 console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
@@ -83,14 +83,14 @@ while(sequences.length < sequencesNeeded){
 		continue
 
 	// generate output filename
-	let filename = ""
+	let filename = sequenceType+"."
 	for(i = 0; i<sequenceLength; i++){
 		filename += subunitNames[sequenceIndexArray[i]]
 		if(i<sequenceLength-1) filename += delimiter
 	}
 
 	// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
-	if(sequenceType == TYPE_RING){
+	if(sequenceType == TYPE_CYCLIC){
 		for(i = 0; i <sequenceLength; i++){
 			sequenceIndexArray.unshift(sequenceIndexArray.pop())
 			sequenceIndexString = sequenceIndexArray.join(",")
@@ -99,7 +99,7 @@ while(sequences.length < sequencesNeeded){
 	}
 
 	// add terminators etc
-	if(sequenceType == TYPE_RING){
+	if(sequenceType == TYPE_CYCLIC){
 		sequenceString = sequenceString.replace(/^(.)/i, '$&1') // add 1 after first character
 		sequenceString = sequenceString.replace(/\(=O\)$/i, '1(=O)') // add 1 after last (=O)
 	} else {
