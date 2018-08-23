@@ -83,7 +83,7 @@ while(sequences.length < sequencesNeeded){
 		continue
 
 	// generate output filename
-	let filename = sequenceType+"."
+	let filename = sequenceType+"."+sequenceLength+"."
 	for(i = 0; i<sequenceLength; i++){
 		filename += subunitNames[sequenceIndexArray[i]].split(delimiter)[0]
 		if(i<sequenceLength-1) filename += delimiter
