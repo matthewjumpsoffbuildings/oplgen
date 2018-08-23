@@ -5,8 +5,8 @@ const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
 	{ name: 'numOfSequences', alias: 'n', type: Number, defaultValue: 100 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
-	{ name: 'outputDirectory', alias: 'o', type: String, defaultValue: "output" },
-	{ name: 'subunitsDirectory', alias: 's', type: String, defaultValue: "subunits" },
+	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
+	{ name: 'subunitsDir', alias: 's', type: String, defaultValue: "subunits" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
 	{ name: 'linear', type: Boolean, defaultValue: false }
 ])
@@ -16,8 +16,8 @@ const TYPE_CYCLIC = 'cyc'
 
 const sequencesNeeded = options.numOfSequences
 const sequenceLength = options.sequenceLength
-const outputDirectory = options.outputDirectory
-const subunitsDirectory = options.subunitsDirectory
+const outputDirectory = options.outputDir
+const subunitsDirectory = options.subunitsDir
 const delimiter = options.delimiter
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
 
@@ -85,7 +85,7 @@ while(sequences.length < sequencesNeeded){
 	// generate output filename
 	let filename = sequenceType+"."
 	for(i = 0; i<sequenceLength; i++){
-		filename += subunitNames[sequenceIndexArray[i]]
+		filename += subunitNames[sequenceIndexArray[i]].split(delimiter)[0]
 		if(i<sequenceLength-1) filename += delimiter
 	}
 
