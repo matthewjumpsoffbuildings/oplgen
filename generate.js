@@ -8,7 +8,9 @@ const options = commandLineArgs([
 	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
 	{ name: 'subunitsDir', alias: 's', type: String, defaultValue: "subunits" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
-	{ name: 'linear', type: Boolean, defaultValue: false }
+	{ name: 'linear', type: Boolean, defaultValue: false },
+	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
+	{ name: 'conserve', alias: 'c', type: String }
 ])
 
 const TYPE_LINEAR = 'lin'
@@ -19,10 +21,23 @@ const sequenceLength = options.sequenceLength
 const outputDirectory = options.outputDir
 const subunitsDirectory = options.subunitsDir
 const delimiter = options.delimiter
+const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
+
+// work out conserve options from -c 1:ADDA,4:3221
+const conserved = []
+if(options.conserve){
+	let c = options.conserve.split(',')
+	for(var i in c){
+		let v = c[i].split(":")
+		conserved[ Number(v[0])-1 ] = v[1]
+	}
+}
 
 // log out the current settings
 console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
+if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
+if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
 console.log(`Using subunit SMILES files from the '${subunitsDirectory}' folder`)
 console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
@@ -36,19 +51,27 @@ bar.start(sequencesNeeded, 0)
 // load subunit SMILES
 const subunits = []
 const subunitNames = []
+const subunitShortNames = {}
+const subunitCIDs = {}
 const subunitFilenames = fs.readdirSync(subunitsDirectory)
-for(var i in subunitFilenames){
+for(i in subunitFilenames){
 	let data = fs.readFileSync(`${subunitsDirectory}/${subunitFilenames[i]}`, {encoding: 'utf8'})
 	subunits.push(data.trim())
-	subunitNames.push(path.parse(subunitFilenames[i]).name)
+	let name = path.parse(subunitFilenames[i]).name,
+		nameSplit = name.split(delimiter)
+	subunitNames.push(name)
+	subunitShortNames[nameSplit[0]] = i
+	if(nameSplit.length > 1) subunitCIDs[nameSplit[1]] = i
 }
+
+// if we dont have enough subunits, dont bother
 if(subunits.length < 1){
 	console.log(`No subunit SMILES files found in the specified '${subunitsDirectory}' folder`)
 	process.exit()
 }
 
 // make sure the specified sequence length is long enough to generate enough unique sequences
-if(subunits.length ** sequenceLength < sequencesNeeded){
+if((subunits.length - conserved.length) ** sequenceLength < sequencesNeeded){
 	console.log(`Your specified sequence length of ${sequenceLength} is too short to generate ${sequencesNeeded} unique sequences`)
 	process.exit()
 }
@@ -69,11 +92,25 @@ while(sequences.length < sequencesNeeded){
 		sequenceString = ""
 
 	// generate a new random sequence
-	for(var i = 0; i<sequenceLength; i++){
-		let subunitIndex = Math.floor(Math.random()*subunits.length),
-			subunitString = subunits[subunitIndex]
+	for(i = 0; i<sequenceLength; i++){
 
-		sequenceString += subunitString
+		let subunitIndex
+
+		// has the user specified a conserved subunit for this position in the chain
+		if(conserved[i]) {
+			let c = conserved[i]
+			if(subunitShortNames.hasOwnProperty(c))
+				subunitIndex = subunitShortNames[c]
+			else if(subunitCIDs.hasOwnProperty(c))
+				subunitIndex = subunitCIDs[c]
+			else
+				console.log(`You have specified to conserve ${c} at position ${i+1} but no source subunit was found to match '${c}', using random subunit instead`)
+		}
+
+		// if we havent set it yet, just do it randomly
+		if(!subunitIndex) subunitIndex = Math.floor(Math.random()*subunits.length)
+
+		sequenceString += subunits[subunitIndex]
 		sequenceIndexArray.push(subunitIndex)
 	}
 
@@ -100,8 +137,8 @@ while(sequences.length < sequencesNeeded){
 
 	// add terminators etc
 	if(sequenceType == TYPE_CYCLIC){
-		sequenceString = sequenceString.replace(/^(.)/i, '$&1') // add 1 after first character
-		sequenceString = sequenceString.replace(/\(=O\)$/i, '1(=O)') // add 1 after last (=O)
+		sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
+		sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
 	} else {
 		sequenceString += "O"
 	}
