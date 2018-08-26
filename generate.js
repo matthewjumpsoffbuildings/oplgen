@@ -26,27 +26,15 @@ const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
 
 // work out conserve options from -c 1:ADDA,4:3221
 const conserved = []
+var numConserved = 0
 if(options.conserve){
 	let c = options.conserve.split(',')
+	numConserved = c.length
 	for(var i in c){
 		let v = c[i].split(":")
 		conserved[ Number(v[0])-1 ] = v[1]
 	}
 }
-
-// log out the current settings
-console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
-if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
-if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`Using subunit SMILES files from the '${subunitsDirectory}' folder`)
-console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
-
-// create a new progress bar instance and use shades_classic theme
-const cliProgress = require('cli-progress');
-const bar = new cliProgress.Bar({hideCursor: true, format: 'Progress {bar} {percentage}%  {value}/{total}'}, cliProgress.Presets.shades_classic)
-bar.start(sequencesNeeded, 0)
-
-
 
 // load subunit SMILES
 const subunits = []
@@ -71,14 +59,26 @@ if(subunits.length < 1){
 }
 
 // make sure the specified sequence length is long enough to generate enough unique sequences
-if((subunits.length - conserved.length) ** sequenceLength < sequencesNeeded){
-	console.log(`Your specified sequence length of ${sequenceLength} is too short to generate ${sequencesNeeded} unique sequences`)
+let surplus = subunits.length ** (sequenceLength - numConserved)
+if(surplus < sequencesNeeded){
+	console.log(`\nYour specified sequence length of ${sequenceLength}, using ${subunits.length} subunit files, with ${numConserved} conserved subunits, will only generate ${surplus} unique sequences, but you tried to generate ${sequencesNeeded}\n`)
 	process.exit()
 }
 
 // make sure output directory exists
 fs.ensureDirSync(outputDirectory)
 
+// log out the current settings
+console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
+if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
+if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
+console.log(`Using subunit SMILES files from the '${subunitsDirectory}' folder`)
+console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
+
+// create a new progress bar instance and use shades_classic theme
+const cliProgress = require('cli-progress');
+const bar = new cliProgress.Bar({hideCursor: true, format: 'Progress {bar} {percentage}%  {value}/{total}'}, cliProgress.Presets.shades_classic)
+bar.start(sequencesNeeded, 0)
 
 
 const sequencesHash = {}
@@ -94,7 +94,7 @@ while(sequences.length < sequencesNeeded){
 	// generate a new random sequence
 	for(i = 0; i<sequenceLength; i++){
 
-		let subunitIndex
+		let subunitIndex = -1
 
 		// has the user specified a conserved subunit for this position in the chain
 		if(conserved[i]) {
@@ -108,7 +108,7 @@ while(sequences.length < sequencesNeeded){
 		}
 
 		// if we havent set it yet, just do it randomly
-		if(!subunitIndex) subunitIndex = Math.floor(Math.random()*subunits.length)
+		if(subunitIndex < 0) subunitIndex = Math.floor(Math.random()*subunits.length)
 
 		sequenceString += subunits[subunitIndex]
 		sequenceIndexArray.push(subunitIndex)
@@ -127,6 +127,7 @@ while(sequences.length < sequencesNeeded){
 	}
 
 	// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
+	sequencesHash[sequenceIndexString] = true
 	if(sequenceType == TYPE_CYCLIC){
 		for(i = 0; i <sequenceLength; i++){
 			sequenceIndexArray.unshift(sequenceIndexArray.pop())
@@ -139,9 +140,8 @@ while(sequences.length < sequencesNeeded){
 	if(sequenceType == TYPE_CYCLIC){
 		sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
 		sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
-	} else {
+	} else
 		sequenceString += "O"
-	}
 
 	// store sequence in array
 	sequences.push(sequenceString)
