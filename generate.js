@@ -72,7 +72,8 @@ fs.ensureDirSync(outputDirectory)
 console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`Using subunit SMILES files from the '${subunitsDirectory}' folder`)
+console.log(`Could generate up to ${surplus} unique sequences with the current settings`)
+console.log(`\nUsing subunit SMILES files from the '${subunitsDirectory}' folder`)
 console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance and use shades_classic theme
