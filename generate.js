@@ -1,6 +1,9 @@
 const fs = require('fs-extra')
 const path = require('path')
 
+const phi = require('number-theory').eulerPhi
+const divisors = require('number-theory').divisors
+
 const startTime = Date.now()
 
 const commandLineArgs = require('command-line-args')
@@ -60,8 +63,20 @@ if(subunits.length < 1){
 	process.exit()
 }
 
-// what is the most sequences we can generate in linear mode?
-const maximum = subunits.length ** (sequenceLength - numConserved)
+// what is the most sequences we can generate
+let maximum = subunits.length ** (sequenceLength - numConserved)
+if(sequenceType == TYPE_CYCLIC && 1) {
+	let n = sequenceLength,
+		k = subunits.length,
+		sum = (arr, func) => arr.reduce( (acc, n) => acc + func(n), arr[0]),
+		divisorsArray = divisors(n),
+		necklaces = (1/n) * sum(divisorsArray, (d) => phi(d) * k ** (n/d))
+
+	maximum = (n % 2) ?
+		(necklaces/2) + 0.5 * (k ** ((n+1)/2)) :
+		(necklaces/2) + 0.25 * (k+1) * (k ** (n/2))
+	maximum = Math.floor(maximum)
+}
 
 // make sure output directory exists
 fs.ensureDirSync(outputDirectory)
@@ -70,8 +85,8 @@ fs.ensureDirSync(outputDirectory)
 console.log(`\nRunning ${iterations} iterations to generate ${sequenceType} sequences of length ${sequenceLength}`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`Could generate up to ${maximum} unique linear sequences with the current settings (unique cyclic sequences will be considerably less)`)
-console.log(`\nUsing subunit SMILES files from the '${subunitsDirectory}' folder`)
+console.log(`Could generate up to ${maximum} unique sequences with the current settings`)
+console.log(`\nUsing subunit SMILES files from the '${subunitsDirectory}' folder (found ${subunits.length} subunit files)`)
 console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance and use shades_classic theme
@@ -119,10 +134,8 @@ for(let k = 0; k < 1000; k++){
 
 	// check this new sequence hasnt been made already
 	sequenceIndexString = sequenceIndexArray.join(",")
-	if(sequencesHash.hasOwnProperty(sequenceIndexString)){
-		// console.log(sequenceIndexString, sequences.length)
+	if(sequencesHash.hasOwnProperty(sequenceIndexString))
 		continue
-	}
 
 	// generate output filename
 	let filename = sequenceType+"."+sequenceLength+"."
@@ -144,9 +157,6 @@ for(let k = 0; k < 1000; k++){
 			sequenceIndexArray.reverse()
 		}
 	}
-
-	// console.log(sequencesHash)
-	// process.exit()
 
 	// add terminators etc
 	if(sequenceType == TYPE_CYCLIC){
@@ -177,6 +187,7 @@ let iterationInterval = setInterval(function(){
 		bar.update(iterations, {unique: sequences.length})
 		bar.stop()
 		console.log(`\nComplete! Generated ${sequences.length} unique sequences\n`)
+		if(iterationsCompleted < iterations) console.log('saved iterations', iterations-iterationsCompleted)
 
 		const endTime = Date.now()
 		const duration = (endTime - startTime)/1000
