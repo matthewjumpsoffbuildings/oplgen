@@ -1,9 +1,11 @@
 const fs = require('fs-extra')
 const path = require('path')
 
+const startTime = Date.now()
+
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'numOfSequences', alias: 'n', type: Number, defaultValue: 100 },
+	{ name: 'iterations', alias: 'i', type: Number, defaultValue: 1000 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
 	{ name: 'subunitsDir', alias: 's', type: String, defaultValue: "subunits" },
@@ -16,7 +18,7 @@ const options = commandLineArgs([
 const TYPE_LINEAR = 'lin'
 const TYPE_CYCLIC = 'cyc'
 
-const sequencesNeeded = options.numOfSequences
+const iterations = options.iterations
 const sequenceLength = options.sequenceLength
 const outputDirectory = options.outputDir
 const subunitsDirectory = options.subunitsDir
@@ -58,35 +60,35 @@ if(subunits.length < 1){
 	process.exit()
 }
 
-// make sure the specified sequence length is long enough to generate enough unique sequences
-let surplus = subunits.length ** (sequenceLength - numConserved)
-if(surplus < sequencesNeeded){
-	console.log(`\nYour specified sequence length of ${sequenceLength}, using ${subunits.length} subunit files, with ${numConserved} conserved subunits, will only generate ${surplus} unique sequences, but you tried to generate ${sequencesNeeded}\n`)
-	process.exit()
-}
+// what is the most sequences we can generate in linear mode?
+const maximum = subunits.length ** (sequenceLength - numConserved)
 
 // make sure output directory exists
 fs.ensureDirSync(outputDirectory)
 
 // log out the current settings
-console.log(`\nGenerating ${sequencesNeeded} ${sequenceType} sequences of length ${sequenceLength}`)
+console.log(`\nRunning ${iterations} iterations to generate ${sequenceType} sequences of length ${sequenceLength}`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`Could generate up to ${surplus} unique sequences with the current settings`)
+console.log(`Could generate up to ${maximum} unique linear sequences with the current settings (unique cyclic sequences will be considerably less)`)
 console.log(`\nUsing subunit SMILES files from the '${subunitsDirectory}' folder`)
 console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance and use shades_classic theme
 const cliProgress = require('cli-progress');
-const bar = new cliProgress.Bar({hideCursor: true, format: 'Progress {bar} {percentage}%  {value}/{total}'}, cliProgress.Presets.shades_classic)
-bar.start(sequencesNeeded, 0)
+const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {percentage}%  {value}/{total} Iterations  {unique} Unique sequences found'}, cliProgress.Presets.shades_classic)
+bar.start(iterations, 0, {unique: 0})
 
 
 const sequencesHash = {}
 const sequences = []
+let iterationsCompleted = 0
 
-// start the main generation loop
-while(sequences.length < sequencesNeeded){
+// main generation function
+function generate(){
+for(let k = 0; k < 1000; k++){
+
+	iterationsCompleted++
 
 	let sequenceIndexArray = [],
 		sequenceIndexString = "",
@@ -117,8 +119,10 @@ while(sequences.length < sequencesNeeded){
 
 	// check this new sequence hasnt been made already
 	sequenceIndexString = sequenceIndexArray.join(",")
-	if(sequencesHash.hasOwnProperty(sequenceIndexString))
+	if(sequencesHash.hasOwnProperty(sequenceIndexString)){
+		// console.log(sequenceIndexString, sequences.length)
 		continue
+	}
 
 	// generate output filename
 	let filename = sequenceType+"."+sequenceLength+"."
@@ -134,8 +138,15 @@ while(sequences.length < sequencesNeeded){
 			sequenceIndexArray.unshift(sequenceIndexArray.pop())
 			sequenceIndexString = sequenceIndexArray.join(",")
 			sequencesHash[sequenceIndexString] = true
+			sequenceIndexArray.reverse()
+			sequenceIndexString = sequenceIndexArray.join(",")
+			sequencesHash[sequenceIndexString] = true
+			sequenceIndexArray.reverse()
 		}
 	}
+
+	// console.log(sequencesHash)
+	// process.exit()
 
 	// add terminators etc
 	if(sequenceType == TYPE_CYCLIC){
@@ -151,13 +162,25 @@ while(sequences.length < sequencesNeeded){
 	fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
 
 	// update progress bar
-	bar.update(sequences.length)
+	bar.update(iterationsCompleted, {unique: sequences.length})
+}
 }
 
-// stop progress bar
-bar.stop()
+let iterationInterval = setInterval(function(){
+	bar.update(iterationsCompleted, {unique: sequences.length})
 
-console.log('\nSuccess!\n')
+	if(iterationsCompleted < iterations && sequences.length < maximum)
+		generate()
+	else {
+		clearInterval(iterationInterval)
 
-// const used = process.memoryUsage().heapUsed / 1024 / 1024
-// console.log(`The script used approximately ${Math.round(used * 100) / 100} MB`)
+		bar.update(iterations, {unique: sequences.length})
+		bar.stop()
+		console.log(`\nComplete! Generated ${sequences.length} unique sequences\n`)
+
+		const endTime = Date.now()
+		const duration = (endTime - startTime)/1000
+		const used = process.memoryUsage().heapUsed / 1024 / 1024
+		console.log(`The script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
+	}
+}, 0)
