@@ -68,14 +68,13 @@ let maximum = subunits.length ** (sequenceLength - numConserved)
 if(sequenceType == TYPE_CYCLIC && 1) {
 	let n = sequenceLength,
 		k = subunits.length,
-		sum = (arr, func) => arr.reduce( (acc, n) => acc + func(n), arr[0]),
+		sum = (arr, func) => arr.reduce( (acc, n) => acc + func(n), 0),
 		divisorsArray = divisors(n),
 		necklaces = (1/n) * sum(divisorsArray, (d) => phi(d) * k ** (n/d))
 
 	maximum = (n % 2) ?
 		(necklaces/2) + 0.5 * (k ** ((n+1)/2)) :
 		(necklaces/2) + 0.25 * (k+1) * (k ** (n/2))
-	maximum = Math.floor(maximum)
 }
 
 // make sure output directory exists
