@@ -17,7 +17,7 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
 	{ name: 'conserve', alias: 'c', type: String },
-	{ name: 'tree', alias: 't', type: Boolean, defaultValue: false}
+	{ name: 'tree', alias: 't', type: Boolean, defaultValue: false},
 ])
 
 const TYPE_LINEAR = 'linear'
@@ -33,6 +33,7 @@ const delimiter = options.delimiter
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
 const methodRequested = options.tree ? METHOD_TREE : METHOD_RANDOM
+const dontOutput = options.outputDir == "0" || options.outputDir == "false" ? true : false
 
 // work out conserve options from -c 1:ADDA,4:3221
 const conserved = []
@@ -58,8 +59,8 @@ for(i in subunitFilenames){
 	let name = path.parse(subunitFilenames[i]).name,
 		nameSplit = name.split(delimiter)
 	subunitNames.push(name)
-	subunitShortNames[nameSplit[0]] = i
-	if(nameSplit.length > 1) subunitCIDs[nameSplit[1]] = i
+	subunitShortNames[nameSplit[0]] = Number(i)
+	if(nameSplit.length > 1) subunitCIDs[nameSplit[1]] = Number(i)
 }
 const subunitsLength = subunits.length
 
@@ -92,7 +93,7 @@ const generate = method == METHOD_TREE || numOfSequences == maximum ?
 	generateRandom
 
 // make sure output directory exists
-fs.ensureDirSync(outputDirectory)
+if(!dontOutput) fs.ensureDirSync(outputDirectory)
 
 // log out the current settings
 console.log(`\nGenerating ${numOfSequences} ${sequenceType} sequences of length ${sequenceLength}, using the ${method} method`)
@@ -100,7 +101,7 @@ if(numRequested > 0 && numRequested != numOfSequences) console.log(`You requeste
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
 console.log(`\nUsing subunit SMILES files from the '${subunitsDirectory}' folder (found ${subunitsLength} subunit files)`)
-console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
+if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance and use shades_classic theme
 const cliProgress = require('cli-progress');
@@ -133,20 +134,9 @@ function generateRandom(){
 		// generate a new random sequence
 		for(i = 0; i<sequenceLength; i++){
 
-			let subunitIndex = -1
+			let subunitIndex = getConserved(i)
 
-			// has the user specified a conserved subunit for this position in the chain
-			if(conserved[i]) {
-				let c = conserved[i]
-				if(subunitShortNames.hasOwnProperty(c))
-					subunitIndex = subunitShortNames[c]
-				else if(subunitCIDs.hasOwnProperty(c))
-					subunitIndex = subunitCIDs[c]
-				else
-					console.log(`You have specified to conserve ${c} at position ${i+1} but no source subunit was found to match '${c}', using random subunit instead`)
-			}
-
-			// if we havent set it yet, just do it randomly
+			// if it hasnt been conserved just do it randomly
 			if(subunitIndex < 0) subunitIndex = Math.floor(Math.random()*subunitsLength)
 
 			// add this subunit to the index array
@@ -202,7 +192,7 @@ function generateRandom(){
 		sequences++
 
 		// write to SMILES file
-		fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
+		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
 
 		// update progress bar
 		bar.update(sequences)
@@ -210,10 +200,13 @@ function generateRandom(){
 }
 
 
-let indexes = Array(sequenceLength).fill(0)
-if(method == METHOD_TREE && numOfSequences < maximum){
-	for(let i in indexes){
-		indexes[i] = Math.floor(Math.random()*subunitsLength)
+let indexes = []
+if(method == METHOD_TREE){
+	for(let i = 0; i<sequenceLength; i++){
+		let conserved = getConserved(i)
+		indexes[i] = conserved > -1 ?
+			conserved :
+			(numOfSequences < maximum || 1 ? Math.floor(Math.random()*subunitsLength) : 0)
 	}
 }
 
@@ -225,17 +218,28 @@ function generateLinearTree(){
 
 		sequences++
 
-		// make a sequence from current indexes
-		let sequence = []
+		let sequenceString = "",
+			filename = sequenceType+"."+sequenceLength+"."
+
+		// generate output string and filename
 		for (let i = 0; i < sequenceLength; i++){
-			sequence[i] = indexes[i]
+			sequenceString += subunits[indexes[i]]
+			filename += subunitNames[indexes[i]].split(delimiter)[0]
+			if(i<sequenceLength-1) filename += delimiter
 		}
 
-		// write file
-		//
+		// add linear terminator
+		sequenceString += "O"
+
+		/// write to SMILES file
+		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
 
 		// make next sequence
 		for ( i = 0; i < sequenceLength; i++) {
+
+			let conserved = getConserved(i)
+			if(conserved > -1) continue
+
 			if (indexes[i] >= subunitsLength - 1)
 				indexes[i] = 0
 			else {
@@ -244,6 +248,20 @@ function generateLinearTree(){
 			}
 		}
 	}
+}
+
+function getConserved(i){
+	let index = -1
+	if(conserved[i]) {
+		let c = conserved[i]
+		if(subunitShortNames.hasOwnProperty(c))
+			index = subunitShortNames[c]
+		else if(subunitCIDs.hasOwnProperty(c))
+			index = subunitCIDs[c]
+		else
+			console.log(`You have specified to conserve ${c} at position ${i+1} but no source subunit was found to match '${c}', using random subunit instead`)
+	}
+	return index
 }
 
 function generateCyclicTree(){
