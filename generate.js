@@ -87,8 +87,8 @@ if(sequenceType == TYPE_CYCLIC && 1) {
 const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequested)
 
 // which generation method should we use?
-const method = numOfSequences == maximum || methodRequested == METHOD_TREE ? METHOD_TREE : METHOD_RANDOM
-const generate = method == METHOD_TREE || numOfSequences == maximum ?
+const method = methodRequested == METHOD_TREE ? METHOD_TREE : METHOD_RANDOM
+const generate = method == METHOD_TREE ?//|| numOfSequences == maximum ?
 	(sequenceType == TYPE_CYCLIC ? generateCyclicTree : generateLinearTree) :
 	generateRandom
 
@@ -193,9 +193,6 @@ function generateRandom(){
 
 		// write to SMILES file
 		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
-
-		// update progress bar
-		bar.update(sequences)
 	}
 }
 
@@ -206,7 +203,7 @@ if(method == METHOD_TREE){
 		let conserved = getConserved(i)
 		indexes[i] = conserved > -1 ?
 			conserved :
-			(numOfSequences < maximum || 1 ? Math.floor(Math.random()*subunitsLength) : 0)
+			(numOfSequences < maximum ? Math.floor(Math.random()*subunitsLength) : 0)
 	}
 }
 
@@ -215,8 +212,6 @@ function generateLinearTree(){
 
 		// if we already have enough sequences dont bother
 		if(sequences >= numOfSequences) return
-
-		sequences++
 
 		let sequenceString = "",
 			filename = sequenceType+"."+sequenceLength+"."
@@ -228,11 +223,14 @@ function generateLinearTree(){
 			if(i<sequenceLength-1) filename += delimiter
 		}
 
-		// add linear terminator
+		// add terminator
 		sequenceString += "O"
 
 		/// write to SMILES file
 		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
+
+		// increment sequences count
+		sequences++
 
 		// make next sequence
 		for ( i = 0; i < sequenceLength; i++) {
@@ -266,7 +264,77 @@ function getConserved(i){
 
 function generateCyclicTree(){
 	for(let k = 0; k < iterationBlock; k++){
+		// if we already have enough sequences dont bother
+		if(sequences >= numOfSequences) return
 
+		let sequenceIndexString = indexes.join(","),
+			sequenceIndexArray = sequenceIndexString.split(",")
+
+		if(!sequencesHash.hasOwnProperty(sequenceIndexString)){
+
+			// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
+			sequencesHash[sequenceIndexString] = true
+			let sequenceHashArray = [sequenceIndexString]
+
+			// if we are in cyclic mode, generate all cyclic variations so they arent repeated either
+			if(sequenceType == TYPE_CYCLIC){
+				for(i = 0; i <sequenceLength; i++){
+					sequenceIndexArray.unshift(sequenceIndexArray.pop())
+					sequenceIndexString = sequenceIndexArray.join(",")
+					sequencesHash[sequenceIndexString] = true
+					sequenceHashArray.push(sequenceIndexString)
+					// do mirrored version of current sequence
+					sequenceIndexArray.reverse()
+					sequenceIndexString = sequenceIndexArray.join(",")
+					sequencesHash[sequenceIndexString] = true
+					sequenceHashArray.push(sequenceIndexString)
+					// reverse again for next iteration
+					sequenceIndexArray.reverse()
+				}
+
+				// sort sequenceHashArray then use the first item as the indexArray/string
+				sequenceHashArray.sort()
+				sequenceIndexString = sequenceHashArray[0]
+				sequenceIndexArray = sequenceIndexString.split(",")
+			}
+
+			let sequenceString = "",
+				filename = sequenceType+"."+sequenceLength+"."
+
+			// generate output string and filename
+			for (let i = 0; i < sequenceLength; i++){
+				sequenceString += subunits[sequenceIndexArray[i]]
+				filename += subunitNames[sequenceIndexArray[i]].split(delimiter)[0]
+				if(i<sequenceLength-1) filename += delimiter
+			}
+
+			// add terminators etc
+			if(sequenceType == TYPE_CYCLIC){
+				sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
+				sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
+			} else
+				sequenceString += "O"
+
+			/// write to SMILES file
+			if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
+
+			// increment sequences count
+			sequences++
+		}
+
+		// make next sequence
+		for ( i = 0; i < sequenceLength; i++) {
+
+			let conserved = getConserved(i)
+			if(conserved > -1) continue
+
+			if (indexes[i] >= subunitsLength - 1)
+				indexes[i] = 0
+			else {
+				indexes[i]++
+				break
+			}
+		}
 	}
 }
 
