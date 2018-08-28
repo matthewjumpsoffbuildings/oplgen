@@ -105,8 +105,10 @@ for(let k = 0; k < 1000; k++){
 	iterationsCompleted++
 
 	let sequenceIndexArray = [],
+		sequenceHashArray = [],
 		sequenceIndexString = "",
-		sequenceString = ""
+		sequenceString = "",
+		filename = sequenceType+"."+sequenceLength+"."
 
 	// generate a new random sequence
 	for(i = 0; i<sequenceLength; i++){
@@ -127,7 +129,7 @@ for(let k = 0; k < 1000; k++){
 		// if we havent set it yet, just do it randomly
 		if(subunitIndex < 0) subunitIndex = Math.floor(Math.random()*subunits.length)
 
-		sequenceString += subunits[subunitIndex]
+		// add this subunit to the index array
 		sequenceIndexArray.push(subunitIndex)
 	}
 
@@ -136,25 +138,38 @@ for(let k = 0; k < 1000; k++){
 	if(sequencesHash.hasOwnProperty(sequenceIndexString))
 		continue
 
-	// generate output filename
-	let filename = sequenceType+"."+sequenceLength+"."
-	for(i = 0; i<sequenceLength; i++){
-		filename += subunitNames[sequenceIndexArray[i]].split(delimiter)[0]
-		if(i<sequenceLength-1) filename += delimiter
-	}
 
 	// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
 	sequencesHash[sequenceIndexString] = true
+	sequenceHashArray.push(sequenceIndexString)
+
+	// if we are in cyclic mode, generate all cyclic variations so they arent repeated either
 	if(sequenceType == TYPE_CYCLIC){
 		for(i = 0; i <sequenceLength; i++){
 			sequenceIndexArray.unshift(sequenceIndexArray.pop())
 			sequenceIndexString = sequenceIndexArray.join(",")
 			sequencesHash[sequenceIndexString] = true
+			sequenceHashArray.push(sequenceIndexString)
+			// do mirrored version of current sequence
 			sequenceIndexArray.reverse()
 			sequenceIndexString = sequenceIndexArray.join(",")
 			sequencesHash[sequenceIndexString] = true
+			sequenceHashArray.push(sequenceIndexString)
+			// reverse again for next iteration
 			sequenceIndexArray.reverse()
 		}
+	}
+
+	// sort sequenceHashArray then use the first item as the indexArray/string
+	sequenceHashArray.sort()
+	sequenceIndexString = sequenceHashArray[0]
+	sequenceIndexArray = sequenceIndexString.split(",")
+
+	// generate output string and filename
+	for(i = 0; i<sequenceLength; i++){
+		sequenceString += subunits[sequenceIndexArray[i]]
+		filename += subunitNames[sequenceIndexArray[i]].split(delimiter)[0]
+		if(i<sequenceLength-1) filename += delimiter
 	}
 
 	// add terminators etc
