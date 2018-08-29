@@ -1,9 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
-
-const phi = require('number-theory').eulerPhi
-const divisors = require('number-theory').divisors
-const sum = (arr, func) => arr.reduce( (acc, n) => acc + func(n), 0)
+const enumeration = require('./utils/enumeration')
 
 const startTime = Date.now()
 
@@ -17,7 +14,7 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
 	{ name: 'conserve', alias: 'c', type: String },
-	{ name: 'tree', alias: 't', type: Boolean, defaultValue: false},
+	{ name: 'tree', alias: 't', type: Boolean, defaultValue: false}
 ])
 
 const TYPE_LINEAR = 'linear'
@@ -71,16 +68,10 @@ if(subunitsLength < 1){
 }
 
 // what is the most sequences we can generate
-let maximum = subunitsLength ** (sequenceLength - numConserved)
+const linearMaximum = subunitsLength ** (sequenceLength - numConserved)
+let maximum = linearMaximum
 if(sequenceType == TYPE_CYCLIC && 1) {
-	let n = sequenceLength,
-		k = subunitsLength,
-		divisorsArray = divisors(n),
-		necklaces = (1/n) * sum(divisorsArray, (d) => phi(d) * k ** (n/d))
-
-	maximum = (n % 2) ?
-		(necklaces/2) + 0.5 * (k ** ((n+1)/2)) :
-		(necklaces/2) + 0.25 * (k+1) * (k ** (n/2))
+	maximum = enumeration(sequenceLength, subunits.length)
 }
 
 // if we have requested more sequences than is possible to generate or -1, just use maximum
@@ -97,6 +88,7 @@ if(!dontOutput) fs.ensureDirSync(outputDirectory)
 
 // log out the current settings
 console.log(`\nGenerating ${numOfSequences} ${sequenceType} sequences of length ${sequenceLength}, using the ${method} method`)
+console.log(`Could generate up to ${linearMaximum} linear sequences`)
 if(numRequested > 0 && numRequested != numOfSequences) console.log(`You requested ${numRequested} but only ${maximum} unique sequences can be generated with the current settings`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
@@ -113,7 +105,7 @@ bar.start(numOfSequences, 0)
 // MAIN COMPUTATION BELOW
 
 const iterationBlock = 1000
-
+let iterations = 0
 
 const sequencesHash = {}
 let sequences = 0
@@ -148,6 +140,7 @@ function generateRandom(){
 		if(sequencesHash.hasOwnProperty(sequenceIndexString))
 			continue
 
+		// console.log(sequenceIndexArray)
 
 		// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
 		sequencesHash[sequenceIndexString] = true
@@ -213,6 +206,8 @@ function generateLinearTree(){
 		// if we already have enough sequences dont bother
 		if(sequences >= numOfSequences) return
 
+		iterations++
+
 		let sequenceString = "",
 			filename = sequenceType+"."+sequenceLength+"."
 
@@ -265,7 +260,9 @@ function getConserved(i){
 function generateCyclicTree(){
 	for(let k = 0; k < iterationBlock; k++){
 		// if we already have enough sequences dont bother
-		if(sequences >= numOfSequences) return
+		if(sequences >= numOfSequences || iterations >= linearMaximum) return
+
+		iterations++
 
 		let sequenceIndexString = indexes.join(","),
 			sequenceIndexArray = sequenceIndexString.split(",")
@@ -276,27 +273,25 @@ function generateCyclicTree(){
 			sequencesHash[sequenceIndexString] = true
 			let sequenceHashArray = [sequenceIndexString]
 
-			// if we are in cyclic mode, generate all cyclic variations so they arent repeated either
-			if(sequenceType == TYPE_CYCLIC){
-				for(i = 0; i <sequenceLength; i++){
-					sequenceIndexArray.unshift(sequenceIndexArray.pop())
-					sequenceIndexString = sequenceIndexArray.join(",")
-					sequencesHash[sequenceIndexString] = true
-					sequenceHashArray.push(sequenceIndexString)
-					// do mirrored version of current sequence
-					sequenceIndexArray.reverse()
-					sequenceIndexString = sequenceIndexArray.join(",")
-					sequencesHash[sequenceIndexString] = true
-					sequenceHashArray.push(sequenceIndexString)
-					// reverse again for next iteration
-					sequenceIndexArray.reverse()
-				}
-
-				// sort sequenceHashArray then use the first item as the indexArray/string
-				sequenceHashArray.sort()
-				sequenceIndexString = sequenceHashArray[0]
-				sequenceIndexArray = sequenceIndexString.split(",")
+			// generate all cyclic variations so they arent repeated either
+			for(i = 0; i <sequenceLength; i++){
+				sequenceIndexArray.unshift(sequenceIndexArray.pop())
+				sequenceIndexString = sequenceIndexArray.join(",")
+				sequencesHash[sequenceIndexString] = true
+				sequenceHashArray.push(sequenceIndexString)
+				// do mirrored version of current sequence
+				sequenceIndexArray.reverse()
+				sequenceIndexString = sequenceIndexArray.join(",")
+				sequencesHash[sequenceIndexString] = true
+				sequenceHashArray.push(sequenceIndexString)
+				// reverse again for next iteration
+				sequenceIndexArray.reverse()
 			}
+
+			// sort sequenceHashArray then use the first item as the indexArray/string
+			sequenceHashArray.sort()
+			sequenceIndexString = sequenceHashArray[0]
+			sequenceIndexArray = sequenceIndexString.split(",")
 
 			let sequenceString = "",
 				filename = sequenceType+"."+sequenceLength+"."
@@ -308,12 +303,9 @@ function generateCyclicTree(){
 				if(i<sequenceLength-1) filename += delimiter
 			}
 
-			// add terminators etc
-			if(sequenceType == TYPE_CYCLIC){
-				sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
-				sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
-			} else
-				sequenceString += "O"
+			// add terminators
+			sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
+			sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
 
 			/// write to SMILES file
 			if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
@@ -341,14 +333,14 @@ function generateCyclicTree(){
 let iterationInterval = setInterval(function(){
 	bar.update(sequences)
 
-	if(sequences < numOfSequences)
+	if(sequences < numOfSequences && iterations < linearMaximum)
 		generate()
 	else {
 		clearInterval(iterationInterval)
 
 		bar.update(sequences)
 		bar.stop()
-		console.log(`\nComplete! Generated ${sequences} unique sequences\n`)
+		console.log(`\nComplete! Generated ${sequences} unique sequences in ${iterations} iterations\n`)
 
 		const endTime = Date.now()
 		const duration = (endTime - startTime)/1000
