@@ -3,7 +3,6 @@ const divisors = require('number-theory').divisors
 const sum = (arr, func) => arr.reduce( (acc, n) => acc + func(n), 0)
 
 module.exports = function(n, k){
-
 	let divisorsArray = divisors(n),
 		necklaces = (1/n) * sum(divisorsArray, (d) => phi(d) * k ** (n/d))
 
