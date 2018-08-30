@@ -15,9 +15,13 @@ const generateRandom = require('./utils/random')
 const generateLinear = require('./utils/linear')
 const generateCyclic = require('./utils/cyclic')
 
+// choose which function to use
 const generate = method == METHOD_TREE ?//|| numOfSequences == maximum ?
 	(sequenceType == TYPE_CYCLIC ? generateCyclic : generateLinear) :
 	generateRandom
+
+// start the progress bar
+bar.start(numOfSequences, 0)
 
 // Start the main loop
 let iterationInterval = setInterval(function(){
@@ -29,6 +33,7 @@ let iterationInterval = setInterval(function(){
 
 		bar.update(sequences)
 		bar.stop()
+		
 		console.log(`\nComplete! Generated ${sequences} unique sequences in ${iterations} iterations\n`)
 
 		const endTime = Date.now()
