@@ -14,10 +14,9 @@ if(sequenceType == TYPE_LINEAR && method == METHOD_TREE){
 }
 
 module.exports = function(){
-	for(var k = 0; k < iterationBlock; k++){
-
+	for(var k = 0; k < numOfSequences; k++){
 		// if we already have enough sequences dont bother
-		if(sequences >= numOfSequences) return
+		// if(sequences >= numOfSequences) return
 
 		iterations++
 
@@ -39,12 +38,13 @@ module.exports = function(){
 
 		// increment sequences count
 		sequences++
+		bar.update(sequences)
 
 		// make next sequence
 		for (i = 0; i < sequenceLength; i++) {
 
-			let conserved = getConserved(i)
-			if(conserved > -1) continue
+			// let conserved = getConserved(i)
+			// if(conserved > -1) continue
 
 			if (indexes[i] >= subunitsLength - 1)
 				indexes[i] = 0

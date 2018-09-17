@@ -8,16 +8,17 @@ global.iterations = 0
 
 // Setup config vars from arguments
 const { numOfSequences, linearMaximum, bar, method, maximum,
-	sequenceType, METHOD_TREE, TYPE_CYCLIC, METHOD_RANDOM } = require('./utils/config')
+	sequenceType, METHOD_TREE, TYPE_CYCLIC, METHOD_RANDOM } = require('./utils/generate/config')
 
 // pull in generation functions
-const generateRandom = require('./utils/random')
-const generateLinear = require('./utils/linear')
-const generateCyclic = require('./utils/cyclic')
+const generateRandom = require('./utils/generate/random')
+const generateLinear = require('./utils/generate/linear')
+const generateCyclic = require('./utils/generate/cyclic')
+const generateCyclicRecursive = require('./utils/generate/recursive')
 
 // choose which function to use
 const generate = method == METHOD_TREE ?//|| numOfSequences == maximum ?
-	(sequenceType == TYPE_CYCLIC ? generateCyclic : generateLinear) :
+	(sequenceType == TYPE_CYCLIC ? generateCyclicRecursive : generateLinear) :
 	generateRandom
 
 // start the progress bar
@@ -26,14 +27,14 @@ bar.start(numOfSequences, 0)
 // Start the main loop
 let iterationInterval = setInterval(function(){
 	bar.update(sequences)
-	if(sequences < numOfSequences && (method == METHOD_RANDOM || iterations < linearMaximum))
+	if(RUN_FOREVER || sequences < numOfSequences && (method == METHOD_RANDOM || iterations < linearMaximum))
 		generate()
 	else {
 		clearInterval(iterationInterval)
 
 		bar.update(sequences)
 		bar.stop()
-		
+
 		console.log(`\nComplete! Generated ${sequences} unique sequences in ${iterations} iterations\n`)
 
 		const endTime = Date.now()

@@ -1,0 +1,44 @@
+allow for generate to load either a directory of smiles, or a single json file
+
+sawadas function doesnt generate any sequences with the same char?
+
+add ability to fix/lock some indexes in sawadas sequence
+
+investigate some duplicates with random method
+
+
+
+use a timeout if no new unique sequences found after a certain time, to terminate program
+
+
+B_k(n) with c fixed positions =    B_k(n)   -   B_k-1(n) - B_k-2(n-1) ... - B_k-c(n-(c-1))
+
+
+
+add symmetry check at each point in the series of subtractions, if symmetry, half the subtraction?
+
+
+n_3 - upper bound
+
+
+l 3						7770
+
+l 4 c 1:ADDA			21455
+
+l 4 c 1:ADDA,4:ADDA		630
+
+l 4 c 2:ADDA,4:D-ALA	630
+
+l 4 c 1:ADDA,4:D-ALA	1225	--linearMaximum of l 2
+l 4 c 3:ADDA,4:D-ALA	1225	--linearMaximum of l 2
+
+l 4						198765
+
+l 5 c 1:AD,3:DAL,5:DAR	1225	--linearMaximum of l 2
+l 5 c 1:ADDA,5:ADDA		21455
+l 5 c 1:ADDA,3:D-ALA	41685
+l 5 c 1:ADDA,5:D-ALA	41685
+l 5 c 1:ADDA,4:D-ALA	41685
+l 5 c 1:ADDA			710431
+
+l 5						5273639

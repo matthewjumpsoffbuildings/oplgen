@@ -1,0 +1,28 @@
+{
+	"ADDA": {
+		"CID": 123
+		"weight": 331.46,
+		"charge": 1,
+		"h-donors": 4,
+		"h-acceptors":4,
+		"smiles": "N[C@@H](C=CC(C)=C[C@H](C)[C@@H](OC)Cc1ccccc1)[C@H](C)C(=O)"
+	},
+	"D-ALA": {
+		"CID": 1234
+		"weight": 89.09,
+		"charge": -1,
+		"smiles": "N[C@H](C)C(=O)"
+	},
+	"D-ARG": {
+		"CID": 2345,
+		"weight": 89.09,
+		"charge": 0,
+		"smiles": "N[C@H](CCCN=C(N)N)C(=O)"
+	},
+	"L-ARG": {
+		"CID": 23456,
+		"weight": 89.09,
+		"charge": 1,
+		"smiles": "NNNC(=O)"
+	}
+}

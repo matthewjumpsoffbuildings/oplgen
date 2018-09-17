@@ -7,7 +7,7 @@ module.exports = function(){
 	for(let k = 0; k < iterationBlock; k++){
 
 		// if we already have enough sequences dont bother
-		if(sequences >= numOfSequences) return
+		// if(sequences >= numOfSequences) return
 
 		iterations++
 

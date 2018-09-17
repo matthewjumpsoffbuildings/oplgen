@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
-const enumeration = require('./enumeration')
+const enumerate = require('./enumerate')
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
@@ -68,9 +68,8 @@ if(subunitsLength < 1){
 // what is the most sequences we can generate
 const linearMaximum = subunitsLength ** (sequenceLength - numConserved)
 let maximum = linearMaximum
-if(sequenceType == TYPE_CYCLIC && 1) {
-	maximum = enumeration(sequenceLength, subunits.length)
-}
+if(sequenceType == TYPE_CYCLIC)
+	maximum = Math.min(enumerate(sequenceLength, subunits.length, numConserved), linearMaximum)
 
 // if we have requested more sequences than is possible to generate or -1, just use maximum
 const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequested)

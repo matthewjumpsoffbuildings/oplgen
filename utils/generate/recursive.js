@@ -5,7 +5,8 @@
 
 const startTime = Date.now()
 
-const enumeration = require('./utils/enumeration')
+const {numOfSequences, sequenceLength, subunitsLength, bar, subunits,
+	sequenceType, subunitNames, delimiter} = require('./config')
 
 const MAX = 99
 const TRUE = 1
@@ -22,7 +23,7 @@ const FALSE = 0
 //-------------------------------------------------------------
 // GLOBAL VARIABLES
 //-------------------------------------------------------------
-let N=3,K=3,D,M,type,head,total=0,NECK=0, LYN=1;
+let N = sequenceLength, K = subunitsLength, D,M,type,head,total=0,NECK=0, LYN=1;
 let UNRESTRICTED=0,DENSITY=0,CONTENT=0,FORBIDDEN=0,BRACELET=1,UNLABELED=0,CHORD=0,LIE=0,CHARM=0,DB=0;
 let a=[], p=[], b=[], f=[], fail=[], num=[], run=[], num_map=[], charm=[];
 let avail=[];
@@ -30,13 +31,27 @@ let nb = 0; // number of blocks
 let B=[]; // run length encoding data structure
 let PRIME=[]; // relatively prime array for charm bracelets
 
-console.log('could generate ', enumeration(N, K))
 
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 function Print() {
-	console.log(a);
-	total++;
+	total++
+	sequences++
+	iterations++
+	bar.update(sequences)
+
+	let sequenceString = "",
+		filename = sequenceType+"."+sequenceLength+"."
+
+	// generate output string and filename
+	for (var i = 1; i < sequenceLength; i++){
+		sequenceString += subunits[indexes[i]]
+		filename += subunitNames[indexes[i]].split(delimiter)[0]
+		if(i<sequenceLength-1) filename += delimiter
+	}
+
+	// add terminator
+	sequenceString += "O"
 }
 
 
@@ -60,7 +75,9 @@ function CheckRev( t, i ) {
 // BRACELETS
 /*-----------------------------------------------------------*/
 function GenB( t, p, r, u, v, RS ) {
-	let j, rev;
+	if(sequences >= numOfSequences) return
+
+	var j, rev;
 
 	if (t-1 > (N-r)/2 + r) {
 		if (a[t-1] > a[N-t+2+r]) RS = FALSE;
@@ -96,19 +113,10 @@ function GenB( t, p, r, u, v, RS ) {
 
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
-function Init() {
+module.exports = function() {
 
 	a = [0]//a[1] = 0;
 
 	GenB(1,1,1,1,1,FALSE);
 }
 //--------------------------------------------------------------------------------
-
-
-Init();
-if (!LIE) console.log("\nTotal = %d\n\n", total);
-
-const endTime = Date.now()
-const duration = (endTime - startTime)/1000
-const used = process.memoryUsage().heapUsed / 1024 / 1024
-console.log(`The script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
