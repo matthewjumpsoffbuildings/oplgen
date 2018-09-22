@@ -1,14 +1,21 @@
 allow for generate to load either a directory of smiles, or a single json file
 
-sawadas function doesnt generate any sequences with the same char?
-
-add ability to fix/lock some indexes in sawadas sequence
-
 investigate some duplicates with random method
 
+sawadas function doesnt generate any sequences with the same char?
+add ability to fix/lock some indexes in sawadas sequence
 
 
-use a timeout if no new unique sequences found after a certain time, to terminate program
+
+
+
+
+
+
+
+
+
+
 
 
 B_k(n) with c fixed positions =    B_k(n)   -   B_k-1(n) - B_k-2(n-1) ... - B_k-c(n-(c-1))
