@@ -5,8 +5,10 @@ global.sequences = 0
 global.sequencesHash = {}
 global.iterationBlock = 1000
 global.iterations = 0
+global.lastUniqueTime = Date.now()
 
 const RUN_FOREVER = false
+const TIMEOUT = 60 * 1000 // time out if no new sequences found in 1 minute
 
 // Setup config vars from arguments
 const { numOfSequences, linearMaximum, bar, method, maximum,
@@ -28,14 +30,20 @@ bar.start(numOfSequences, 0)
 
 // Start the main loop
 let iterationInterval = setInterval(function(){
+
 	bar.update(sequences)
-	if(RUN_FOREVER || sequences < numOfSequences && (method == METHOD_RANDOM || iterations < linearMaximum))
+	let noNewFoundTime = Date.now() - lastUniqueTime
+
+	if( (RUN_FOREVER && noNewFoundTime < TIMEOUT) ||
+		(noNewFoundTime < TIMEOUT && sequences < numOfSequences && (method == METHOD_RANDOM || iterations < linearMaximum)))
 		generate()
 	else {
+
 		clearInterval(iterationInterval)
 
-		bar.update(sequences)
 		bar.stop()
+
+		if(noNewFoundTime >= TIMEOUT) console.log(`\nDidnt find any unique sequences for ${TIMEOUT/1000} seconds, terminating`)
 
 		console.log(`\nComplete! Generated ${sequences} unique sequences in ${iterations} iterations\n`)
 

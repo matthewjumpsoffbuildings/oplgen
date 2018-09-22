@@ -79,6 +79,8 @@ module.exports = function(){
 
 		sequences++
 
+		lastUniqueTime = Date.now()
+
 		// write to SMILES file
 		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
 	}
