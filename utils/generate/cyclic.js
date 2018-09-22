@@ -35,13 +35,13 @@ module.exports = function(){
 				sequenceIndexString = sequenceIndexArray.join(",")
 				sequencesHash[sequenceIndexString] = true
 				sequenceHashArray.push(sequenceIndexString)
-				// do mirrored version of current sequence
-				sequenceIndexArray.reverse()
-				sequenceIndexString = sequenceIndexArray.join(",")
-				sequencesHash[sequenceIndexString] = true
-				sequenceHashArray.push(sequenceIndexString)
-				// reverse again for next iteration
-				sequenceIndexArray.reverse()
+				// // do mirrored version of current sequence
+				// sequenceIndexArray.reverse()
+				// sequenceIndexString = sequenceIndexArray.join(",")
+				// sequencesHash[sequenceIndexString] = true
+				// sequenceHashArray.push(sequenceIndexString)
+				// // reverse again for next iteration
+				// sequenceIndexArray.reverse()
 			}
 
 			// sort sequenceHashArray then use the first item as the indexArray/string

@@ -6,6 +6,8 @@ global.sequencesHash = {}
 global.iterationBlock = 1000
 global.iterations = 0
 
+const RUN_FOREVER = false
+
 // Setup config vars from arguments
 const { numOfSequences, linearMaximum, bar, method, maximum,
 	sequenceType, METHOD_TREE, TYPE_CYCLIC, METHOD_RANDOM } = require('./utils/generate/config')
