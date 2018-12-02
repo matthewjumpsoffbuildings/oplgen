@@ -7,7 +7,7 @@ const options = commandLineArgs([
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 0 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
-	{ name: 'subunitsDir', alias: 's', type: String, defaultValue: "subunits" },
+	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
@@ -23,7 +23,7 @@ const METHOD_RANDOM = 'random'
 const numRequested = options.number
 const sequenceLength = options.sequenceLength
 const outputDirectory = options.outputDir
-const subunitsDirectory = options.subunitsDir
+const subunitsFile = options.subunits
 const delimiter = options.delimiter
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
@@ -47,15 +47,14 @@ const subunits = []
 const subunitNames = []
 const subunitShortNames = {}
 const subunitCIDs = {}
-const subunitFilenames = fs.readdirSync(subunitsDirectory)
-for(i in subunitFilenames){
-	let data = fs.readFileSync(`${subunitsDirectory}/${subunitFilenames[i]}`, {encoding: 'utf8'})
-	subunits.push(data.trim())
-	let name = path.parse(subunitFilenames[i]).name,
-		nameSplit = name.split(delimiter)
-	subunitNames.push(name)
-	subunitShortNames[nameSplit[0]] = Number(i)
-	if(nameSplit.length > 1) subunitCIDs[nameSplit[1]] = Number(i)
+const subunitsJSON = JSON.parse( fs.readFileSync(subunitsFile))
+
+var n = 0
+for(var s in subunitsJSON){
+	var subunit = subunitsJSON[s]
+	subunitShortNames[s] = n
+	if(subunit.CID) subunitCIDs[subunit.CID] = n
+	n++
 }
 const subunitsLength = subunits.length
 

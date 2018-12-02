@@ -35,7 +35,11 @@ let iterationInterval = setInterval(function(){
 	let noNewFoundTime = Date.now() - lastUniqueTime
 
 	if( (RUN_FOREVER && noNewFoundTime < TIMEOUT) ||
-		(noNewFoundTime < TIMEOUT && sequences < numOfSequences && (method == METHOD_RANDOM || iterations < linearMaximum)))
+		(
+			noNewFoundTime < TIMEOUT && sequences < numOfSequences
+			&& (method == METHOD_RANDOM || iterations < linearMaximum)
+		)
+	)
 		generate()
 	else {
 

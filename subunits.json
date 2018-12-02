@@ -13,17 +13,26 @@
 		"smiles": "N[C@H](C)C(=O)",
 		"weight": 89.09,
 		"charge": -1,
+		"h-donors": 4,
+		"h-acceptors":4,
+		"log-p": 2
 	},
 	"D-ARG": {
 		"CID": 2345,
 		"smiles": "N[C@H](CCCN=C(N)N)C(=O)",
 		"weight": 89.09,
-		"charge": 0
+		"charge": 0,
+		"h-donors": 4,
+		"h-acceptors":4,
+		"log-p": 2
 	},
 	"L-ARG": {
 		"CID": 23456,
 		"smiles": "NNNC(=O)",
 		"weight": 89.09,
 		"charge": 1,
+		"h-donors": 4,
+		"h-acceptors":4,
+		"log-p": 2
 	}
 }

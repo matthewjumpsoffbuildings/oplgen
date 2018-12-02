@@ -45,8 +45,8 @@ function Print() {
 
 	// generate output string and filename
 	for (var i = 1; i < sequenceLength; i++){
-		sequenceString += subunits[indexes[i]]
-		filename += subunitNames[indexes[i]].split(delimiter)[0]
+		sequenceString += subunits[a[i]]
+		filename += subunitNames[a[i]].split(delimiter)[0]
 		if(i<sequenceLength-1) filename += delimiter
 	}
 
