@@ -23,14 +23,14 @@ for(var i = 0; i<sourceFilenames.length; i++){
 	var filename = sourceFilenames[i],
 		filenameSubunits = filename.replace(/^(cyclic|linear)\.\d+\./, "").replace(/\.smiles$/, ""),
 		filenameSplit = filenameSubunits.split(delimiter),
-		data = Object.assign({ score: 0 }, props)
+		data = Object.assign({ score: 0, filename: filename }, props)
 
 	for(var k = 0; k<filenameSplit.length; k++){
 
 		var subunit = subunits[filenameSplit[k]]
 
 		for(var prop in props){
-			data[prop] += subunit[prop]
+			data[prop] += subunit[prop]/2
 		}
 	}
 
@@ -38,16 +38,56 @@ for(var i = 0; i<sourceFilenames.length; i++){
 		if(!propsMax.hasOwnProperty(prop) || propsMax[prop] < data[prop]) propsMax[prop] = data[prop]
 		if(!propsMin.hasOwnProperty(prop) || propsMin[prop] > data[prop]) propsMin[prop] = data[prop]
 	}
-	// console.log(data)
+
+	sourceFilenames[i] = data
+
+	bar.update(i/2)
 }
 
-console.log(propsMin)
-console.log(propsMax)
+
+for(var i = 0; i<sourceFilenames.length; i++){
+	var file = sourceFilenames[i],
+		filename = file.filename
+
+	for(var prop in props){
+		var score = 0,
+			val = file[prop]
+
+		if(prop == "miLogP") {
+			if(val >= 1 && val <= 3)
+				score = 1.5 // optimal range
+			else if(val >= -4 && val <= 5)
+				score = 0.5 // suboptimal range
+			else
+				score = 0 // out of range
+		}
+		else // everything but logP
+			score = (propsMax[prop] - val)  / (propsMax[prop] - propsMin[prop])
+
+		// make the lipinksi props more important
+		if(prop == "MW" || prop == "nON" || prop == "nOHNH")
+			score *= 1.5
+
+		file.score += score
+		file[prop+"_score"] = score
+		file[prop+"_min"] = propsMin[prop]
+		file[prop+"_max"] = propsMax[prop]
+	}
+
+	bar.update((sourceFilenames.length/2)+i/2)
+}
+
+
+sourceFilenames.sort(function(a, b){
+	return b.score - a.score
+})
 
 bar.update(sourceFilenames.length)
 bar.stop()
 
-// console.log(`Found ${results.length} files that match your filter`)
+
+// console.log(sourceFilenames.slice(0, 10))
+
 
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000
