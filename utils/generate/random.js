@@ -66,7 +66,7 @@ module.exports = function(){
 		// generate output string and filename
 		for(i = 0; i<sequenceLength; i++){
 			sequenceString += subunits[sequenceIndexArray[i]]
-			filename += subunitNames[sequenceIndexArray[i]].split(delimiter)[0]
+			filename += subunitNames[sequenceIndexArray[i]]
 			if(i<sequenceLength-1) filename += delimiter
 		}
 

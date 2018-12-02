@@ -46,21 +46,21 @@ if(options.conserve){
 const subunits = []
 const subunitNames = []
 const subunitShortNames = {}
-const subunitCIDs = {}
 const subunitsJSON = JSON.parse( fs.readFileSync(subunitsFile))
 
 var n = 0
 for(var s in subunitsJSON){
 	var subunit = subunitsJSON[s]
 	subunitShortNames[s] = n
-	if(subunit.CID) subunitCIDs[subunit.CID] = n
+	subunitNames.push(s)
+	subunits.push(subunit)
 	n++
 }
 const subunitsLength = subunits.length
 
 // if we dont have enough subunits, dont bother
 if(subunitsLength < 1){
-	console.log(`No subunit SMILES files found in the specified '${subunitsDirectory}' folder`)
+	console.log(`No subunit SMILES files found in the specified '${subunitsFile}' file`)
 	process.exit()
 }
 
@@ -85,7 +85,7 @@ console.log(`Could generate up to ${linearMaximum} linear sequences`)
 if(numRequested > 0 && numRequested != numOfSequences) console.log(`You requested ${numRequested} but only ${maximum} unique sequences can be generated with the current settings`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`\nUsing subunit SMILES files from the '${subunitsDirectory}' folder (found ${subunitsLength} subunit files)`)
+console.log(`\nUsing subunit SMILES files from the '${subunitsFile}' file (found ${subunitsLength} subunits)`)
 if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance and use shades_classic theme
@@ -100,7 +100,7 @@ module.exports = {
 	numOfSequences,
 	sequenceLength,
 	outputDirectory,
-	subunitsDirectory,
+	subunitsFile,
 	delimiter,
 	ringClosureDigit,
 	sequenceType,
@@ -117,8 +117,6 @@ module.exports = {
 	subunitsLength,
 	subunitNames,
 	subunitShortNames,
-	subunitCIDs,
-	subunitFilenames,
 	conserved,
 	bar
 }

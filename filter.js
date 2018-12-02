@@ -1,37 +1,53 @@
 const startTime = Date.now()
 
 const {sourceFolder, sourceFilenames, conserved, delimiter, bar,
-	subunitShortNames, subunitCIDs} = require('./utils/filter/config')
+	subunits} = require('./utils/filter/config')
 
 bar.start(sourceFilenames.length, 0, {matches: 0})
 
-const results = []
+const props = {
+	miLogP: 0,
+	TPSA: 0,
+	natoms: 0,
+	MW: 0,
+	nON: 0,
+	nOHNH: 0,
+	nrotb: 0,
+	volume: 0
+}
+const propsMax = {}
+const propsMin = {}
 
 for(var i = 0; i<sourceFilenames.length; i++){
 
 	var filename = sourceFilenames[i],
 		filenameSubunits = filename.replace(/^(cyclic|linear)\.\d+\./, "").replace(/\.smiles$/, ""),
 		filenameSplit = filenameSubunits.split(delimiter),
-		weight = 0, charge = 0
+		data = Object.assign({ score: 0 }, props)
 
 	for(var k = 0; k<filenameSplit.length; k++){
 
-		var subunitShortName = filenameSplit[k],
-			subunit = subunitShortNames[subunitShortName]
+		var subunit = subunits[filenameSplit[k]]
 
-		charge += subunit.charge
-		weight += subunit.weight
+		for(var prop in props){
+			data[prop] += subunit[prop]
+		}
 	}
 
-	if(weight < 800) results.push(filename)
-
-	bar.update(i, {matches: results.length})
+	for(var prop in props){
+		if(!propsMax.hasOwnProperty(prop) || propsMax[prop] < data[prop]) propsMax[prop] = data[prop]
+		if(!propsMin.hasOwnProperty(prop) || propsMin[prop] > data[prop]) propsMin[prop] = data[prop]
+	}
+	// console.log(data)
 }
+
+console.log(propsMin)
+console.log(propsMax)
 
 bar.update(sourceFilenames.length)
 bar.stop()
 
-console.log(`Found ${results.length} files that match your filter`)
+// console.log(`Found ${results.length} files that match your filter`)
 
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000

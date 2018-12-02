@@ -6,8 +6,7 @@ const options = commandLineArgs([
 	{ name: 'source', alias: 's', type: String, defaultValue: "output" },
 	{ name: 'conserve', alias: 'c', type: String },
 	{ name: 'subunitsJSON', alias: 'j', type: String, defaultValue: "subunits.json" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
-	// { name: 'cyclic', alias: 'c', type: Boolean, defaultValue: false }
+	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" }
 ])
 
 const delimiter = options.delimiter
@@ -19,16 +18,7 @@ const sourceFilenames = fs.readdirSync(sourceFolder)
 
 
 const subunitsString = fs.readFileSync(options.subunitsJSON)
-const subunitsJSON = JSON.parse(subunitsString)
-const subunitShortNames = {}
-const subunitCIDs = {}
-
-for(var i in subunitsJSON){
-	var filename = i,
-		split = filename.split(delimiter)
-	subunitShortNames[split[0]] = subunitsJSON [i]
-	if(split[1]) subunitCIDs[split[1]] = subunitsJSON[i]
-}
+const subunits = JSON.parse(subunitsString)
 
 
 const conserved = []
@@ -51,8 +41,7 @@ module.exports = {
 	sourceFolder,
 	sourceFilenames,
 	conserved,
-	subunitShortNames,
-	subunitCIDs,
+	subunits,
 	delimiter,
 	bar
 }
