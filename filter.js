@@ -1,7 +1,8 @@
 const startTime = Date.now()
 
-const {sourceFolder, sourceFilenames, conserved, delimiter, bar,
-	subunits} = require('./utils/filter/config')
+const {
+	sourceFolder, sourceFilenames, outputFolder, delimiter, bar, number, subunits
+} = require('./utils/filter/config')
 
 bar.start(sourceFilenames.length, 0, {matches: 0})
 
@@ -18,23 +19,32 @@ const props = {
 const propsMax = {}
 const propsMin = {}
 
-for(var i = 0; i<sourceFilenames.length; i++){
+var file,
+	filename,
+	filenameSubunits,
+	filenameSplit,
+	data,
+	subunit,
+	i, k, prop,
+	score, val
 
-	var filename = sourceFilenames[i],
-		filenameSubunits = filename.replace(/^(cyclic|linear)\.\d+\./, "").replace(/\.smiles$/, ""),
-		filenameSplit = filenameSubunits.split(delimiter),
-		data = Object.assign({ score: 0, filename: filename }, props)
+for(i = 0; i<sourceFilenames.length; i++){
 
-	for(var k = 0; k<filenameSplit.length; k++){
+	filename = sourceFilenames[i]
+	filenameSubunits = filename.replace(/^(cyclic|linear)\.\d+\./, "").replace(/\.smiles$/, "")
+	filenameSplit = filenameSubunits.split(delimiter)
+	data = Object.assign({ score: 0, filename: filename }, props)
 
-		var subunit = subunits[filenameSplit[k]]
+	for(k = 0; k<filenameSplit.length; k++){
 
-		for(var prop in props){
-			data[prop] += subunit[prop]/2
+		subunit = subunits[filenameSplit[k]]
+
+		for(prop in props){
+			data[prop] += subunit[prop]
 		}
 	}
 
-	for(var prop in props){
+	for(prop in props){
 		if(!propsMax.hasOwnProperty(prop) || propsMax[prop] < data[prop]) propsMax[prop] = data[prop]
 		if(!propsMin.hasOwnProperty(prop) || propsMin[prop] > data[prop]) propsMin[prop] = data[prop]
 	}
@@ -45,13 +55,13 @@ for(var i = 0; i<sourceFilenames.length; i++){
 }
 
 
-for(var i = 0; i<sourceFilenames.length; i++){
-	var file = sourceFilenames[i],
-		filename = file.filename
+for(i = 0; i<sourceFilenames.length; i++){
+	file = sourceFilenames[i]
+	filename = file.filename
 
-	for(var prop in props){
-		var score = 0,
-			val = file[prop]
+	for(prop in props){
+		score = 0,
+		val = file[prop]
 
 		if(prop == "miLogP") {
 			if(val >= 1 && val <= 3)
@@ -69,15 +79,15 @@ for(var i = 0; i<sourceFilenames.length; i++){
 			score *= 1.5
 
 		file.score += score
-		file[prop+"_score"] = score
-		file[prop+"_min"] = propsMin[prop]
-		file[prop+"_max"] = propsMax[prop]
+		// file[prop+"_score"] = score
+		// file[prop+"_min"] = propsMin[prop]
+		// file[prop+"_max"] = propsMax[prop]
 	}
 
 	bar.update((sourceFilenames.length/2)+i/2)
 }
 
-
+// sort based on score
 sourceFilenames.sort(function(a, b){
 	return b.score - a.score
 })
@@ -86,9 +96,17 @@ bar.update(sourceFilenames.length)
 bar.stop()
 
 
-// console.log(sourceFilenames.slice(0, 10))
+const fs = require('fs-extra')
+const { execSync } = require('child_process')
+fs.ensureDirSync(outputFolder)
 
-
+for(i = 0; i < number; i++){
+	filename = sourceFilenames[i].filename.replace(".smiles", "")
+	console.log(`\n${filename} - obabel step 1`)
+	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${filename}.mol2 --gen3d --partialcharge`)
+	console.log(`${filename} - obabel step 2`)
+	execSync(`obabel -isy2 ${outputFolder}/${filename}.mol2 -osy2 -O ${outputFolder}/${filename}.mol2 -p 7 --minimize --conformer`)
+}
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000
 const used = process.memoryUsage().heapUsed / 1024 / 1024

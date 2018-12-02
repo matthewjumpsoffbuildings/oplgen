@@ -7,7 +7,7 @@ const options = commandLineArgs([
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 0 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
-	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
+	{ name: 'input', alias: 'i', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
@@ -43,18 +43,12 @@ if(options.conserve){
 }
 
 // load subunit SMILES
-const subunits = []
 const subunitNames = []
-const subunitShortNames = {}
+const subunits = []
 const subunitsJSON = JSON.parse( fs.readFileSync(subunitsFile))
-
-var n = 0
 for(var s in subunitsJSON){
-	var subunit = subunitsJSON[s]
-	subunitShortNames[s] = n
 	subunitNames.push(s)
-	subunits.push(subunit)
-	n++
+	subunits.push(subunitsJSON[s])
 }
 const subunitsLength = subunits.length
 
@@ -116,7 +110,6 @@ module.exports = {
 	subunits,
 	subunitsLength,
 	subunitNames,
-	subunitShortNames,
 	conserved,
 	bar
 }

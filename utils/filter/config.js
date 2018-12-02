@@ -3,32 +3,30 @@ const path = require('path')
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'source', alias: 's', type: String, defaultValue: "output" },
-	{ name: 'conserve', alias: 'c', type: String },
-	{ name: 'subunitsJSON', alias: 'j', type: String, defaultValue: "subunits.json" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" }
+	{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "output" },
+	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "converted" },
+	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
+	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
+	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 }
 ])
 
 const delimiter = options.delimiter
+const number = options.number
 
-
-const sourceFolder = options.source
+const sourceFolder = options.inputFolder
+const outputFolder = options.outputFolder
 console.log("Loading files from ", sourceFolder)
 const sourceFilenames = fs.readdirSync(sourceFolder)
 
 
-const subunitsString = fs.readFileSync(options.subunitsJSON)
+const subunitsString = fs.readFileSync(options.subunits)
 const subunits = JSON.parse(subunitsString)
 
-
-const conserved = []
-var numConserved = 0
-if(options.conserve){
-	let c = options.conserve.split(',')
-	numConserved = c.length
-	for(var i in c){
-		let v = c[i].split(":")
-		conserved[ Number(v[0])-1 ] = v[1]
+// normalize props (/2)
+for(var i in subunits){
+	var subunit = subunits[i]
+	for(var prop in subunit){
+		subunit[prop] = subunit[prop]/2
 	}
 }
 
@@ -38,9 +36,10 @@ const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {per
 
 
 module.exports = {
+	number,
 	sourceFolder,
 	sourceFilenames,
-	conserved,
+	outputFolder,
 	subunits,
 	delimiter,
 	bar
