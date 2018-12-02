@@ -5,7 +5,7 @@ const files = fs.readdirSync('subunits')
 var json = {}
 
 for(var i in files){
-	var name = files[i].split('.')[0].toUpperCase()
+	var name = files[i].split('.')[0].toUpperCase().replace("(", "").replace(")", "-")
 	var props = {}
 
 	var text = fs.readFileSync('subunits/'+files[i]).toString()
