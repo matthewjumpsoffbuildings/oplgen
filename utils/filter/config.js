@@ -6,7 +6,7 @@ const options = commandLineArgs([
 	{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "output" },
 	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "converted" },
 	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "_" },
+	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 }
 ])
 

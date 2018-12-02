@@ -100,12 +100,16 @@ const fs = require('fs-extra')
 const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
 
+const padStringLength = String(number).length
+
 for(i = 0; i < number; i++){
 	filename = sourceFilenames[i].filename.replace(".smiles", "")
+	k = "000"+(i+1)
+	k = k.substr(k.length-padStringLength)
 	console.log(`\n${filename} - obabel step 1`)
-	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${filename}.mol2 --gen3d --partialcharge`)
+	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${k}.${filename}.mol2 --gen3d --partialcharge`)
 	console.log(`${filename} - obabel step 2`)
-	execSync(`obabel -isy2 ${outputFolder}/${filename}.mol2 -osy2 -O ${outputFolder}/${filename}.mol2 -p 7 --minimize --conformer`)
+	execSync(`obabel -isy2 ${outputFolder}/${k}.${filename}.mol2 -osy2 -O ${outputFolder}/${k}.${filename}.mol2 -p 7 --minimize --conformer`)
 }
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000

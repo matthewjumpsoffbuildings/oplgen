@@ -3,7 +3,7 @@ const startTime = Date.now()
 // Globals
 global.sequences = 0
 global.sequencesHash = {}
-global.iterationBlock = 1000
+global.iterationBlock = 2000
 global.iterations = 0
 global.lastUniqueTime = Date.now()
 

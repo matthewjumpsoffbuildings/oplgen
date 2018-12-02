@@ -1,5 +1,5 @@
 {
-  "(6Z)-ADDA": {
+  "6Z-ADDA": {
     "smiles": "N[C@@H](\\C=C\\C(C)=C/[C@H](C)[C@@H](OC)Cc1ccccc1)[C@H](C)\\C(=O)",
     "miLogP": 5.14,
     "TPSA": 76.66,
@@ -10,7 +10,7 @@
     "nrotb": 14,
     "volume": 635.73
   },
-  "(H4)Y": {
+  "H4-Y": {
     "smiles": "N[C@@H](C[C@@H]1CC[C@H](C=C1)O)C(=O)",
     "miLogP": -0.77,
     "TPSA": 98.65,
@@ -131,7 +131,7 @@
     "nrotb": 12,
     "volume": 600.68
   },
-  "E(OME)": {
+  "E-OME": {
     "smiles": "N[C@@H](C(=O)OC)CCC(=O)",
     "miLogP": -0.83,
     "TPSA": 110.81,
@@ -285,7 +285,7 @@
     "nrotb": 6,
     "volume": 324.28
   },
-  "M(O)": {
+  "M-O": {
     "smiles": "N[C@@H](CCS(C)=O)C(=O)",
     "miLogP": -3.1,
     "TPSA": 92.34,
