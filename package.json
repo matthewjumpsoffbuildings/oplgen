@@ -8,8 +8,13 @@
     "start": "node index.js",
     "clean": "rm -rf converted; rm -rf output"
   },
+  "bin": {
+    "generate": "./generate.js",
+    "filter": "./filter.js"
+  },
   "author": "",
   "license": "ISC",
+  "preferGlobal": true,
   "dependencies": {
     "cli-progress": "^2.1.0",
     "command-line-args": "^5.0.2",

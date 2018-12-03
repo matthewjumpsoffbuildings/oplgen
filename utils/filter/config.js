@@ -3,8 +3,8 @@ const path = require('path')
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "output" },
-	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "converted" },
+	{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "smiles" },
+	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "mol2" },
 	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 }

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const startTime = Date.now()
 
 const {
@@ -142,7 +144,7 @@ for(i = 0; i < number; i++){
 
 	combinedString += fs.readFileSync(`${outputFolder}/${k}.${filename}.mol2`)
 }
-fs.writeFileSync(`${outputFolder}/combined.mol2`, combinedString)
+fs.writeFileSync(`output.mol2`, combinedString)
 
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000

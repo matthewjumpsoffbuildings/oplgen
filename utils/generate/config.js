@@ -4,9 +4,9 @@ const enumerate = require('./enumerate')
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'number', alias: 'n', type: Number, defaultValue: 0 },
+	{ name: 'number', alias: 'n', type: Number, defaultValue: 1000000 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
-	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
+	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "smiles" },
 	{ name: 'input', alias: 'i', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 	{ name: 'linear', type: Boolean, defaultValue: false },
@@ -66,7 +66,7 @@ const linearMaximum = subunitsLength ** (sequenceLength - numConserved)
 const cyclicMaximum = enumerate(sequenceLength, subunits.length, numConserved)
 const maximum = sequenceType == TYPE_CYCLIC ? Math.min(cyclicMaximum, linearMaximum) : linearMaximum
 
-// if we have requested more sequences than is possible to generate or -1, just use maximum
+// if we have requested more sequences than is possible to generate or 0, just use maximum
 const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequested)
 
 // which generation method should we use?
@@ -82,7 +82,7 @@ console.log(`Could generate up to ${linearMaximum} linear sequences and ${cyclic
 if(numRequested > 0 && numRequested != numOfSequences) console.log(`You requested ${numRequested} but only ${maximum} unique sequences can be generated with the current settings`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`\nUsing subunit SMILES files from the '${subunitsFile}' file (found ${subunitsLength} subunits)`)
+console.log(`\nUsing subunit SMILES from the '${subunitsFile}' file (found ${subunitsLength} subunits)`)
 if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance and use shades_classic theme

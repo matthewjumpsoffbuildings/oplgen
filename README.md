@@ -5,7 +5,7 @@ Requirements
 
 Generate:
 ```
-{ name: 'number', alias: 'n', type: Number, defaultValue: 0 },
+{ name: 'number', alias: 'n', type: Number, defaultValue: 1000000 }, 0 = maximum
 { name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 { name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
 { name: 'input', alias: 'i', type: String, defaultValue: "subunits.json" },
