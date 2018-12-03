@@ -134,8 +134,15 @@ for(i = 0; i < number; i++){
 
 
 // combine all mol2 files into one big output mol2
+var combinedString = ""
+for(i = 0; i < number; i++){
+	filename = sourceFilenames[i].filename.replace(".smiles", "")
+	k = "000"+(i+1)
+	k = k.substr(k.length-padStringLength)
 
-
+	combinedString += fs.readFileSync(`${outputFolder}/${k}.${filename}.mol2`)
+}
+fs.writeFileSync(`${outputFolder}/combined.mol2`, combinedString)
 
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000

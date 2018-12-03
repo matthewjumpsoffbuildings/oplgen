@@ -45,10 +45,13 @@ if(options.conserve){
 // load subunit SMILES
 const subunitNames = []
 const subunits = []
-const subunitsJSON = JSON.parse( fs.readFileSync(subunitsFile))
-for(var s in subunitsJSON){
+const subunitsHash = JSON.parse( fs.readFileSync(subunitsFile))
+var i = 0;
+for(var s in subunitsHash){
 	subunitNames.push(s)
-	subunits.push(subunitsJSON[s])
+	subunits.push(subunitsHash[s])
+	subunitsHash[s].index = i
+	i++
 }
 const subunitsLength = subunits.length
 
@@ -108,6 +111,7 @@ module.exports = {
 	linearMaximum,
 	dontOutput,
 	subunits,
+	subunitsHash,
 	subunitsLength,
 	subunitNames,
 	conserved,

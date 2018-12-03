@@ -5,7 +5,8 @@
   "repository": "git@bitbucket.org:matthewjumpsoffbuildings/smiles-generator.git",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "clean": "rm -rf converted; rm -rf output"
   },
   "author": "",
   "license": "ISC",

@@ -1,3 +1,33 @@
+Requirements
+- node+npm
+- openbabel
+- dock6
+
+Generate:
+```
+{ name: 'number', alias: 'n', type: Number, defaultValue: 0 },
+{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
+{ name: 'outputDir', alias: 'o', type: String, defaultValue: "output" },
+{ name: 'input', alias: 'i', type: String, defaultValue: "subunits.json" },
+{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
+{ name: 'linear', type: Boolean, defaultValue: false },
+{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
+{ name: 'conserve', alias: 'c', type: String },
+{ name: 'sequential', alias: 's', type: Boolean, defaultValue: false}
+```
+
+Filter:
+```
+{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "output" },
+{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "converted" },
+{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
+{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
+{ name: 'number', alias: 'n', type: Number, defaultValue: 100 }
+```
+
+
+after obabel conversion concatenate all mol2 files into single mol2 for dock
+
 garbage collection, especially in random/cyclic generate js (linear seems to be good)
 
 how to handle running generate/filter over an existing folder of outputs. global binary could help
