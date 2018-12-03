@@ -18,10 +18,10 @@ const { numOfSequences, linearMaximum, bar, method, maximum,
 const generateRandom = require('./utils/generate/random')
 const generateLinear = require('./utils/generate/linear')
 const generateCyclic = require('./utils/generate/cyclic')
-const generateCyclicRecursive = require('./utils/generate/recursive')
+// const generateCyclicRecursive = require('./utils/generate/recursive')
 
 // choose which function to use
-const generate = (method == METHOD_SEQUENTIAL || numOfSequences == maximum) ?
+const generate = method == METHOD_SEQUENTIAL ?
 	(sequenceType == TYPE_CYCLIC ? generateCyclic : generateLinear) :
 	generateRandom
 

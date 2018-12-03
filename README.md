@@ -1,3 +1,8 @@
+garbage collection, especially in random/cyclic generate js (linear seems to be good)
+
+how to handle running generate/filter over an existing folder of outputs. global binary could help
+
+
 Compile Dock6
 - gcc, g++, gfortran
 - on OSX use homebrew and add /usr/local/bin to .bash_profile path, then `ln -s gcc-8 gcc` etc to use brew version of gcc/++/fortran

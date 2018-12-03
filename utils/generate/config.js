@@ -67,7 +67,8 @@ const maximum = sequenceType == TYPE_CYCLIC ? Math.min(cyclicMaximum, linearMaxi
 const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequested)
 
 // which generation method should we use?
-const method = methodRequested == METHOD_SEQUENTIAL ? METHOD_SEQUENTIAL : METHOD_RANDOM
+const method = methodRequested == METHOD_SEQUENTIAL || numOfSequences == maximum ?
+	METHOD_SEQUENTIAL : METHOD_RANDOM
 
 // make sure output directory exists
 if(!dontOutput) fs.ensureDirSync(outputDirectory)

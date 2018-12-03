@@ -6,7 +6,8 @@ const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maxi
 var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
 	filename, subunitIndex
 
-module.exports = function(){
+module.exports = function()
+{
 	for(k = 0; k < iterationBlock; k++){
 
 		// if we already have enough sequences dont bother
