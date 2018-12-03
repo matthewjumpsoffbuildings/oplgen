@@ -253,15 +253,15 @@
     "volume": 162.155
   },
   "L-HILE": {
-    "smiles": "N[C@@H]([C@@H]C(C)CC)C(=O)",
-    "miLogP": 0.735,
+    "smiles": "N[C@@H](C[C@H](C)CC)C(=O)",
+    "miLogP": 1.075,
     "TPSA": 29.1,
     "natoms": 9,
-    "MW": 126.18,
+    "MW": 127.185,
     "nON": 2,
     "nOHNH": 1,
     "nrotb": 3,
-    "volume": 129.57
+    "volume": 132.665
   },
   "L-HPHE": {
     "smiles": "N[C@@H](CCC1=CC=CC=C1)C(=O)",
