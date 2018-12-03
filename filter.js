@@ -67,7 +67,7 @@ for(i = 0; i<sourceFilenames.length; i++){
 			if(val >= 1 && val <= 3)
 				score = 1.5 // optimal range
 			else if(val >= -4 && val <= 5)
-				score = 0.5 // suboptimal range
+				score = 1 // suboptimal range
 			else
 				score = 0 // out of range
 		}
@@ -101,17 +101,35 @@ const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
 
 const padStringLength = String(number).length
+const wip = "000.UNCONVERTED"
 
 for(i = 0; i < number; i++){
 	filename = sourceFilenames[i].filename.replace(".smiles", "")
 	k = "000"+(i+1)
 	k = k.substr(k.length-padStringLength)
+
+	// check if this smiles isnt partially converted
+	if(fs.existsSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)){
+		fs.unlinkSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)
+		if(fs.existsSync(`${outputFolder}/${k}.${filename}.mol2`))
+			fs.unlinkSync(`${outputFolder}/${k}.${filename}.mol2`)
+	} // otherwise its already converted, move on
+	else if(fs.existsSync(`${outputFolder}/${k}.${filename}.mol2`))
+		continue
+
 	console.log(`\nconverting to mol2 - ${i+1}/${number}`)
+
+	// step 1 of obabel
 	console.log(`\n${filename} - obabel step 1`)
-	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${k}.${filename}.mol2 --gen3d --partialcharge`)
+	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${wip}.${k}.${filename}.mol2 --gen3d --partialcharge`)
+
+	// step 2 of obabel
 	console.log(`${filename} - obabel step 2`)
-	execSync(`obabel -isy2 ${outputFolder}/${k}.${filename}.mol2 -osy2 -O ${outputFolder}/${k}.${filename}.mol2 -p 7 --minimize --conformer`)
+	execSync(`obabel -isy2 ${outputFolder}/${wip}.${k}.${filename}.mol2 -osy2 -O ${outputFolder}/${k}.${filename}.mol2 -p 7 --minimize --conformer`)
+	fs.unlinkSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)
 }
+
+
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000
 const used = process.memoryUsage().heapUsed / 1024 / 1024

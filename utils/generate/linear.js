@@ -38,7 +38,6 @@ module.exports = function(){
 
 		// increment sequences count
 		sequences++
-		bar.update(sequences)
 
 		// make next sequence
 		for (i = 0; i < sequenceLength; i++) {

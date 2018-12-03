@@ -12,7 +12,7 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
 	{ name: 'conserve', alias: 'c', type: String },
-	{ name: 'tree', alias: 't', type: Boolean, defaultValue: false}
+	// { name: 'tree', alias: 't', type: Boolean, defaultValue: false}
 ])
 
 const TYPE_LINEAR = 'linear'
