@@ -28,6 +28,8 @@ var file,
 	i, k, prop,
 	score, val
 
+
+// calculate the props for each one
 for(i = 0; i<sourceFilenames.length; i++){
 
 	filename = sourceFilenames[i]
@@ -54,7 +56,7 @@ for(i = 0; i<sourceFilenames.length; i++){
 	bar.update(i/2)
 }
 
-
+// score the props for each one
 for(i = 0; i<sourceFilenames.length; i++){
 	file = sourceFilenames[i]
 	filename = file.filename
@@ -96,6 +98,7 @@ bar.update(sourceFilenames.length)
 bar.stop()
 
 
+// convert to mol2
 const fs = require('fs-extra')
 const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
@@ -128,6 +131,10 @@ for(i = 0; i < number; i++){
 	execSync(`obabel -isy2 ${outputFolder}/${wip}.${k}.${filename}.mol2 -osy2 -O ${outputFolder}/${k}.${filename}.mol2 -p 7 --minimize --conformer`)
 	fs.unlinkSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)
 }
+
+
+// combine all mol2 files into one big output mol2
+
 
 
 const endTime = Date.now()

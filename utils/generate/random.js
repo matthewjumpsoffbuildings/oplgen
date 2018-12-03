@@ -3,20 +3,22 @@ const getConserved = require('./getConserved')
 const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, subunits, subunitNames,
 	outputDirectory, subunitsLength, bar, TYPE_CYCLIC, ringClosureDigit} = require('./config')
 
+var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
+	filename, subunitIndex
+
 module.exports = function(){
-	for(let k = 0; k < iterationBlock; k++){
+	for(k = 0; k < iterationBlock; k++){
 
 		// if we already have enough sequences dont bother
-		// if(sequences >= numOfSequences) return
+		if(sequences >= numOfSequences) return
 
 		iterations++
 
-		var sequenceIndexArray = [],
-			sequenceHashArray = [],
-			sequenceIndexString = "",
-			sequenceString = "",
-			filename = sequenceType+"."+sequenceLength+".",
-			subunitIndex
+		sequenceIndexArray = []
+		sequenceHashArray = []
+		sequenceIndexString = ""
+		sequenceString = ""
+		filename = sequenceType+"."+sequenceLength+"."
 
 		// generate a new random sequence
 		for(i = 0; i<sequenceLength; i++){
@@ -35,8 +37,6 @@ module.exports = function(){
 		if(sequencesHash.hasOwnProperty(sequenceIndexString))
 			continue
 
-		// console.log(sequenceIndexArray)
-
 		// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
 		sequencesHash[sequenceIndexString] = true
 		sequenceHashArray.push(sequenceIndexString)
@@ -48,13 +48,6 @@ module.exports = function(){
 				sequenceIndexString = sequenceIndexArray.join(",")
 				sequencesHash[sequenceIndexString] = true
 				sequenceHashArray.push(sequenceIndexString)
-				// // do mirrored version of current sequence
-				// sequenceIndexArray.reverse()
-				// sequenceIndexString = sequenceIndexArray.join(",")
-				// sequencesHash[sequenceIndexString] = true
-				// sequenceHashArray.push(sequenceIndexString)
-				// // reverse again for next iteration
-				// sequenceIndexArray.reverse()
 			}
 
 			// sort sequenceHashArray then use the first item as the indexArray/string
@@ -76,6 +69,9 @@ module.exports = function(){
 			sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
 		} else
 			sequenceString += "O"
+
+		// add metadata
+		sequenceString += ' '+filename
 
 		sequences++
 

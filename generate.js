@@ -12,7 +12,7 @@ const TIMEOUT = 60 * 1000 // time out if no new sequences found in 1 minute
 
 // Setup config vars from arguments
 const { numOfSequences, linearMaximum, bar, method, maximum,
-	sequenceType, METHOD_TREE, TYPE_CYCLIC, METHOD_RANDOM } = require('./utils/generate/config')
+	sequenceType, METHOD_SEQUENTIAL, TYPE_CYCLIC, METHOD_RANDOM } = require('./utils/generate/config')
 
 // pull in generation functions
 const generateRandom = require('./utils/generate/random')
@@ -21,8 +21,8 @@ const generateCyclic = require('./utils/generate/cyclic')
 const generateCyclicRecursive = require('./utils/generate/recursive')
 
 // choose which function to use
-const generate = method == METHOD_TREE ?//|| numOfSequences == maximum ?
-	(sequenceType == TYPE_CYCLIC ? generateCyclicRecursive : generateLinear) :
+const generate = (method == METHOD_SEQUENTIAL || numOfSequences == maximum) ?
+	(sequenceType == TYPE_CYCLIC ? generateCyclic : generateLinear) :
 	generateRandom
 
 // start the progress bar

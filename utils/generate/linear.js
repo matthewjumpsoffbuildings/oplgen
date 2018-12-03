@@ -1,12 +1,13 @@
 const fs = require('fs-extra')
 const getConserved = require('./getConserved')
-const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, outputDirectory,
-	subunits, subunitsLength, subunitNames, bar, method, METHOD_TREE, TYPE_LINEAR, ringClosureDigit} = require('./config')
+const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, linearMaximum, outputDirectory,
+	subunits, subunitsLength, subunitNames, bar, method, METHOD_SEQUENTIAL, TYPE_LINEAR, ringClosureDigit} = require('./config')
 
-let indexes = []
-if(sequenceType == TYPE_LINEAR && method == METHOD_TREE){
+var indexes = [], conserved, i, k
+
+if(sequenceType == TYPE_LINEAR && method == METHOD_SEQUENTIAL){
 	for(var i = 0; i<sequenceLength; i++){
-		var conserved = getConserved(i)
+		conserved = getConserved(i)
 		indexes[i] = conserved > -1 ?
 			conserved :
 			(numOfSequences < maximum ? Math.floor(Math.random()*subunitsLength) : 0)
@@ -14,9 +15,9 @@ if(sequenceType == TYPE_LINEAR && method == METHOD_TREE){
 }
 
 module.exports = function(){
-	for(var k = 0; k < numOfSequences; k++){
+	for(k = 0; k < iterationBlock; k++){
 		// if we already have enough sequences dont bother
-		// if(sequences >= numOfSequences) return
+		if(sequences >= numOfSequences || iterations >= linearMaximum) return
 
 		iterations++
 
@@ -24,14 +25,17 @@ module.exports = function(){
 			filename = sequenceType+"."+sequenceLength+"."
 
 		// generate output string and filename
-		for (var i = 0; i < sequenceLength; i++){
-			sequenceString += subunits[indexes[i]]
-			filename += subunitNames[indexes[i]].split(delimiter)[0]
+		for (i = 0; i < sequenceLength; i++){
+			sequenceString += subunits[indexes[i]].smiles
+			filename += subunitNames[indexes[i]]
 			if(i<sequenceLength-1) filename += delimiter
 		}
 
 		// add terminator
 		sequenceString += "O"
+
+		// add metadata
+		sequenceString += ' '+filename
 
 		/// write to SMILES file
 		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
@@ -42,8 +46,7 @@ module.exports = function(){
 		// make next sequence
 		for (i = 0; i < sequenceLength; i++) {
 
-			// let conserved = getConserved(i)
-			// if(conserved > -1) continue
+			if(getConserved(i) > -1) continue
 
 			if (indexes[i] >= subunitsLength - 1)
 				indexes[i] = 0

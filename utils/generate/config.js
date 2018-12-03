@@ -12,12 +12,12 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
 	{ name: 'conserve', alias: 'c', type: String },
-	// { name: 'tree', alias: 't', type: Boolean, defaultValue: false}
+	{ name: 'sequential', alias: 's', type: Boolean, defaultValue: false}
 ])
 
 const TYPE_LINEAR = 'linear'
 const TYPE_CYCLIC = 'cyclic'
-const METHOD_TREE = 'tree'
+const METHOD_SEQUENTIAL = 'sequential'
 const METHOD_RANDOM = 'random'
 
 const numRequested = options.number
@@ -27,7 +27,7 @@ const subunitsFile = options.input
 const delimiter = options.delimiter
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
-const methodRequested = options.tree ? METHOD_TREE : METHOD_RANDOM
+const methodRequested = options.sequential ? METHOD_SEQUENTIAL : METHOD_RANDOM
 const dontOutput = options.outputDir == "0" || options.outputDir == "false" ? true : false
 
 // work out conserve options from -c 1:ADDA,4:3221
@@ -60,22 +60,21 @@ if(subunitsLength < 1){
 
 // what is the most sequences we can generate
 const linearMaximum = subunitsLength ** (sequenceLength - numConserved)
-let maximum = linearMaximum
-if(sequenceType == TYPE_CYCLIC)
-	maximum = Math.min(enumerate(sequenceLength, subunits.length, numConserved), linearMaximum)
+const cyclicMaximum = enumerate(sequenceLength, subunits.length, numConserved)
+const maximum = sequenceType == TYPE_CYCLIC ? Math.min(cyclicMaximum, linearMaximum) : linearMaximum
 
 // if we have requested more sequences than is possible to generate or -1, just use maximum
 const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequested)
 
 // which generation method should we use?
-const method = methodRequested == METHOD_TREE ? METHOD_TREE : METHOD_RANDOM
+const method = methodRequested == METHOD_SEQUENTIAL ? METHOD_SEQUENTIAL : METHOD_RANDOM
 
 // make sure output directory exists
 if(!dontOutput) fs.ensureDirSync(outputDirectory)
 
 // log out the current settings
 console.log(`\nGenerating ${numOfSequences} ${sequenceType} sequences of length ${sequenceLength}, using the ${method} method`)
-console.log(`Could generate up to ${linearMaximum} linear sequences`)
+console.log(`Could generate up to ${linearMaximum} linear sequences and ${cyclicMaximum} cyclic sequences with the current sequence length and settings`)
 if(numRequested > 0 && numRequested != numOfSequences) console.log(`You requested ${numRequested} but only ${maximum} unique sequences can be generated with the current settings`)
 if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
 if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
@@ -100,7 +99,7 @@ module.exports = {
 	sequenceType,
 	methodRequested,
 	method,
-	METHOD_TREE,
+	METHOD_SEQUENTIAL,
 	METHOD_RANDOM,
 	TYPE_CYCLIC,
 	TYPE_LINEAR,
