@@ -144,22 +144,32 @@ for(i = 0; i < number; i++)
 
 
 // combine all mol2 files into one big output mol2
-var combinedString = ""
-for(i = 0; i < number; i++)
+const outputFilenames = fs.readdirSync(outputFolder)
+if(fs.existsSync(`output.mol2`)) fs.unlinkSync(`output.mol2`)
+var totalOutputs = 0
+for(i = 0; i < outputFilenames.length; i++)
 {
-	filename = filtered[i].filename.replace(".smiles", "")
-	k = ""
-	// k = padString+(i+1)
-	// k = k.substr(k.length-padStringLength)
+	filename = outputFilenames[i]
+	if(!fs.existsSync(`${outputFolder}/${filename}`)) continue
 
-	combinedString += fs.readFileSync(`${outputFolder}/${k}${filename}.mol2`)
+	if(filename.indexOf(wip) === 0){
+		fs.unlinkSync(`${outputFolder}/${filename}`)
+		filename = filename.replace(wip, "")
+		if(fs.existsSync(`${outputFolder}/${filename}`))
+			fs.unlinkSync(`${outputFolder}/${filename}`)
+		continue
+	}
+
+	k = fs.readFileSync(`${outputFolder}/${filename}`)
+	fs.appendFileSync(`output.mol2`, k)
+	totalOutputs++
 }
-fs.writeFileSync(`output.mol2`, combinedString)
+
 
 
 // done
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000
 const used = process.memoryUsage().heapUsed / 1024 / 1024
-console.log(`\n\nDone! Created output.mol2, ready for dock6`)
+console.log(`\n\nDone! Created output.mol2 with ${totalOutputs} items, ready for dock6`)
 console.log(`\nThe script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
