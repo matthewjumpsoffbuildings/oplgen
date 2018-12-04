@@ -86,10 +86,13 @@ Take a large number of SMILES files, sort them by druglikeness, select a range f
 - `-s --subunits` - default: [subunits.json](./subunits.json)
 	- Where to find the `subunits.json` file. This should be the same JSON file used in the `smiles-generate` step for the current working directory
 	- As with `smiles-generate`, by default if you dont pass this agument and `subunits.json` is not present in the working directory, the [default subunits JSON](./subunits.json) is used.
+- `-d --delimiter` - default: `__`
+	- This should be the same as the delimiter used in `smiles-generate` (Which it is by default)
+	- As with `smiles-generate` this is unlikely to need editing.
 
 ## subunits-json
 
-Copy the default `subunits.json` into the current working directory. You can then edit it as needed, and `smiles-generate` will use your local copy when running in that directory, instead of the default subunits JSON file
+Copy the [default subunits.json](./subunits.json) into the current working directory. You can then edit it as needed, and `smiles-generate` will use your local copy when running in that directory, instead of the default subunits JSON file
 
 
 
