@@ -24,15 +24,17 @@ sudo npm install -g pepgen
 
 This program contains 3 command line utilities:
 
-- `pep-generate`
-- `pep-filter`
-- `pep-subunits`
+- `pep-generate` 	(alias `pepgen`)
+- `pep-filter` 		(alias `pepflt`)
+- `pep-subunits` 	(alias `pepsub`)
 
 The ideal way to use these is to create separate folders for each type/length of chain you are interested in generating/filtering. For example if you want to generate cyclic chains of length 5, make a folder named `cyclo.5` or something similar, and open a cmd/terminal in that folder to run the generation/filtering. Then if you want to generate linear chains of length 4, make another folder named `linear.4` and open a cmd/terminal there to do the generation/filtering for that chain type.
 
 ### pep-generate
 ```
 pep-generate -l 6 -n 25000
+
+pepgen -l 4 -n 3000 --linear
 ```
 
 Generate a specified number of oligopeptides in SMILES format from a collection of subunits stored in JSON format. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
@@ -78,6 +80,8 @@ The following options are available:
 ### pep-filter
 ```
 pep-filter -n 100 -r 1000
+
+pepflt -n 20 -r 400
 ```
 
 Take a large number of SMILES files, sort them by drug-likeness, select a range from the top scorers, convert them to mol2 and create an `output.mol2` file ready for dock6
@@ -103,5 +107,10 @@ Take a large number of SMILES files, sort them by drug-likeness, select a range 
 	- As with `pep-generate` this is unlikely to need editing.
 
 ### pep-subunits
+```
+pep-subunits
+
+pepsub
+```
 
 Copy the [default subunits.json](./subunits.json) into the current working directory. You can then edit it as needed, and `pep-generate` will use your local copy when running in that directory, instead of the default subunits JSON file

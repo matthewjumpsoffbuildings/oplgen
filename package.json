@@ -1,13 +1,16 @@
 {
   "name": "pepgen",
-  "version": "1.0.2",
-  "description": "Generate oligopeptides in SMILES and mol2 format",
+  "version": "1.0.0",
+  "description": "PepGen - Generate oligopeptides in SMILES and mol2 format",
   "repository": "git@github.com:matthewjumpsoffbuildings/pepgen.git",
   "main": "index.js",
   "bin": {
     "pep-generate": "./generate.js",
+    "pepgen": "./generate.js",
     "pep-filter": "./filter.js",
-    "pep-subunits": "./get-subunits.js"
+    "pepflt": "./filter.js",
+    "pep-subunits": "./get-subunits.js",
+    "pepsub": "./get-subunits.js"
   },
   "author": "matthewjumpsoffbuildings",
   "license": "ISC",
