@@ -7,12 +7,12 @@ const options = commandLineArgs([
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 1000000 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "smiles" },
-	{ name: 'input', alias: 'i', type: String, defaultValue: "subunits.json" },
+	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
 	{ name: 'conserve', alias: 'c', type: String },
-	{ name: 'sequential', alias: 's', type: Boolean, defaultValue: false}
+	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
 ])
 
 const TYPE_LINEAR = 'linear'
@@ -23,7 +23,7 @@ const METHOD_RANDOM = 'random'
 const numRequested = options.number
 const sequenceLength = options.sequenceLength
 const outputDirectory = options.outputDir
-const subunitsFile = options.input
+const subunitsFile = options.subunits
 const delimiter = options.delimiter
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
