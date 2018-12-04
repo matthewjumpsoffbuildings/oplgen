@@ -74,7 +74,7 @@ The following options are available:
 	- If the chain length and subunits specified is unable to generate the requested number of chains, or if you request all possible chains, sequential generation is automatically activated
 
 
-## smiles-filter
+### smiles-filter
 ```
 smiles-filter -n 100 -r 1000
 ```
@@ -101,6 +101,6 @@ Take a large number of SMILES files, sort them by druglikeness, select a range f
 	- This should be the same as the delimiter used in `smiles-generate` (Which it is by default)
 	- As with `smiles-generate` this is unlikely to need editing.
 
-## subunits-json
+### subunits-json
 
 Copy the [default subunits.json](./subunits.json) into the current working directory. You can then edit it as needed, and `smiles-generate` will use your local copy when running in that directory, instead of the default subunits JSON file
