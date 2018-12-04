@@ -28,6 +28,9 @@ This program contains 3 command line utilities:
 - `subunits-json`
 
 ### smiles-generate
+```
+smiles-generate -l 6 -n 25000
+```
 
 Generate a specified number of SMILES files from a collection of subunits stored in JSON format. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
 
@@ -69,6 +72,9 @@ The following options are available:
 
 
 ## smiles-filter
+```
+smiles-filter -n 100 -r 1000
+```
 
 Take a large number of SMILES files, sort them by druglikeness, select a range from the top scorers, convert them to mol2 and create an `output.mol2` file ready for dock6
 
@@ -93,21 +99,3 @@ Take a large number of SMILES files, sort them by druglikeness, select a range f
 ## subunits-json
 
 Copy the [default subunits.json](./subunits.json) into the current working directory. You can then edit it as needed, and `smiles-generate` will use your local copy when running in that directory, instead of the default subunits JSON file
-
-
-
-
-
-garbage collection, especially in random/cyclic generate js (linear seems to be good)
-
-how to handle running generate/filter over an existing folder of outputs. global binary could help
-
-
-Compile Dock6
-- gcc, g++, gfortran
-- on OSX use homebrew and add /usr/local/bin to .bash_profile path, then `ln -s gcc-8 gcc` etc to use brew version of gcc/++/fortran
-
-steps
-
-- `smiles-generate` to generate tons of smiles
-- `smiles-filter` to sort by properties like logP and charge and then pick the top 100 or so smiles and convert those top 100 or so smiles to mol2
