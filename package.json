@@ -1,6 +1,6 @@
 {
   "name": "smiles-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate sequences of SMILES objects",
   "repository": "git@github.com:matthewjumpsoffbuildings/smiles-generator.git",
   "main": "index.js",
