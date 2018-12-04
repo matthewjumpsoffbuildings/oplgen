@@ -38,6 +38,5 @@ Compile Dock6
 
 steps
 
-- generate.js to generate tons of smiles
-- filter.js to sort by properties like logP and charge and then pick the top 100 or so smiles and convert those top 100 or so smiles to mol2
-- dock.js to dock the top 100 mol2s
+- `smiles-generate` to generate tons of smiles
+- `smiles-filter` to sort by properties like logP and charge and then pick the top 100 or so smiles and convert those top 100 or so smiles to mol2
