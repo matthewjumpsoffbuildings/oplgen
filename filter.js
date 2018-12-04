@@ -3,7 +3,7 @@
 const startTime = Date.now()
 
 const {
-	sourceFolder, sourceFilenames, outputFolder, delimiter, bar, number, subunits
+	sourceFolder, sourceFilenames, outputFolder, delimiter, bar, number, range, subunits
 } = require('./utils/filter/config')
 
 bar.start(sourceFilenames.length, 0, {matches: 0})
@@ -83,70 +83,83 @@ for(i = 0; i<sourceFilenames.length; i++){
 			score *= 1.5
 
 		file.score += score
-		// file[prop+"_score"] = score
-		// file[prop+"_min"] = propsMin[prop]
-		// file[prop+"_max"] = propsMax[prop]
 	}
 
 	bar.update((sourceFilenames.length/2)+i/2)
 }
+
+bar.update(sourceFilenames.length)
+bar.stop()
+
 
 // sort based on score
 sourceFilenames.sort(function(a, b){
 	return b.score - a.score
 })
 
-bar.update(sourceFilenames.length)
-bar.stop()
+// get filtered results
+const _ = require('underscore')
+const rangeArray = sourceFilenames.splice(0, range)
+const filtered = rangeArray.length > number ? _.sample(rangeArray, number) : rangeArray
+
+// sort filtered again based on score
+filtered.sort(function(a, b){
+	return b.score - a.score
+})
 
 
 // convert to mol2
 const fs = require('fs-extra')
 const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
+const wip = "00.UNCONVERTED."
 
-const padStringLength = String(number).length
-const wip = "000.UNCONVERTED"
-
-for(i = 0; i < number; i++){
-	filename = sourceFilenames[i].filename.replace(".smiles", "")
-	k = "000"+(i+1)
-	k = k.substr(k.length-padStringLength)
+for(i = 0; i < number; i++)
+{
+	filename = filtered[i].filename.replace(".smiles", "")
+	k = ""
+	// k = padString+(i+1)
+	// k = k.substr(k.length-padStringLength)
 
 	// check if this smiles isnt partially converted
-	if(fs.existsSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)){
-		fs.unlinkSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)
-		if(fs.existsSync(`${outputFolder}/${k}.${filename}.mol2`))
-			fs.unlinkSync(`${outputFolder}/${k}.${filename}.mol2`)
+	if(fs.existsSync(`${outputFolder}/${wip}${k}${filename}.mol2`)){
+		fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
+		if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
+			fs.unlinkSync(`${outputFolder}/${k}${filename}.mol2`)
 	} // otherwise its already converted, move on
-	else if(fs.existsSync(`${outputFolder}/${k}.${filename}.mol2`))
+	else if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
 		continue
 
 	console.log(`\nconverting to mol2 - ${i+1}/${number}`)
 
 	// step 1 of obabel
 	console.log(`\n${filename} - obabel step 1`)
-	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${wip}.${k}.${filename}.mol2 --gen3d --partialcharge`)
+	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${wip}${k}${filename}.mol2 --gen3d --partialcharge`)
 
 	// step 2 of obabel
 	console.log(`${filename} - obabel step 2`)
-	execSync(`obabel -isy2 ${outputFolder}/${wip}.${k}.${filename}.mol2 -osy2 -O ${outputFolder}/${k}.${filename}.mol2 -p 7 --minimize --conformer`)
-	fs.unlinkSync(`${outputFolder}/${wip}.${k}.${filename}.mol2`)
+	execSync(`obabel -isy2 ${outputFolder}/${wip}${k}${filename}.mol2 -osy2 -O ${outputFolder}/${k}${filename}.mol2 -p 7 --minimize --conformer`)
+	fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
 }
 
 
 // combine all mol2 files into one big output mol2
 var combinedString = ""
-for(i = 0; i < number; i++){
-	filename = sourceFilenames[i].filename.replace(".smiles", "")
-	k = "000"+(i+1)
-	k = k.substr(k.length-padStringLength)
+for(i = 0; i < number; i++)
+{
+	filename = filtered[i].filename.replace(".smiles", "")
+	k = ""
+	// k = padString+(i+1)
+	// k = k.substr(k.length-padStringLength)
 
-	combinedString += fs.readFileSync(`${outputFolder}/${k}.${filename}.mol2`)
+	combinedString += fs.readFileSync(`${outputFolder}/${k}${filename}.mol2`)
 }
 fs.writeFileSync(`output.mol2`, combinedString)
 
+
+// done
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000
 const used = process.memoryUsage().heapUsed / 1024 / 1024
-console.log(`The script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
+console.log(`\n\nDone! Created output.mol2, ready for dock6`)
+console.log(`\nThe script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
