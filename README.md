@@ -13,7 +13,7 @@ Generate:
 { name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 { name: 'linear', type: Boolean, defaultValue: false },
 { name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
-{ name: 'conserve', alias: 'c', type: String },
+{ name: 'conserve', alias: 'c', type: String }, - eg -c 1:ADDA,4:ADDA
 { name: 'sequential', alias: 's', type: Boolean, defaultValue: false}
 ```
 
