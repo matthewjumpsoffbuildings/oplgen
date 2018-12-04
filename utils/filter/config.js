@@ -13,6 +13,7 @@ const options = commandLineArgs([
 
 const delimiter = options.delimiter
 const number = options.number
+const range = options.range
 
 const sourceFolder = options.inputFolder
 const outputFolder = options.outputFolder
@@ -39,6 +40,7 @@ const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {per
 
 module.exports = {
 	number,
+	range,
 	sourceFolder,
 	sourceFilenames,
 	outputFolder,
