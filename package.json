@@ -5,12 +5,11 @@
   "repository": "git@bitbucket.org:matthewjumpsoffbuildings/smiles-generator.git",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "clean": "rm -rf converted; rm -rf output"
   },
   "bin": {
-    "generate": "./generate.js",
-    "filter": "./filter.js"
+    "smiles-generate": "./generate.js",
+    "smiles-filter": "./filter.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +17,7 @@
   "dependencies": {
     "cli-progress": "^2.1.0",
     "command-line-args": "^5.0.2",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^7.0.1",
     "get-divisors": "^1.0.0",
     "number-theory": "^1.1.0"
   }
