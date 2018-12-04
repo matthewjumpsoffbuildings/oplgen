@@ -10,7 +10,7 @@
   "bin": {
     "smiles-generate": "./generate.js",
     "smiles-filter": "./filter.js",
-    "smiles-get-subunits": "./get-subunits.js"
+    "subunits-json": "./get-subunits.js"
   },
   "author": "",
   "license": "ISC",

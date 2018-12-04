@@ -25,11 +25,13 @@ This program contains 3 command line utilities:
 
 - `smiles-generate`
 - `smiles-filter`
-- `smiles-get-subunits`
+- `subunits-json`
 
 ### smiles-generate
 
-Generate a specified number of SMILES files from a collection of subunits stored in JSON format. The following options are available:
+Generate a specified number of SMILES files from a collection of subunits stored in JSON format. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
+
+The following options are available:
 
 - `-l --sequenceLength` - default: `5`
 	- How long should each generated chain of subunits be?
@@ -39,12 +41,12 @@ Generate a specified number of SMILES files from a collection of subunits stored
 	- If you pass a number less than 1, it will generate all possible unique chains for the given length/subunits
 - `-o --outputDir` - default: `smiles`
 	- Where should the generated smiles go?
-- `-s --subunits` - default: `subunits.json`
+- `-s --subunits` - default: [subunits.json](./subunits.json)
 	- Where should the generator look for the subunits JSON data?
 	- By default, the program has a subunits JSON file with 32 common subunits in its install directory
-	- If no `subunits.json` file is present, or if you dont pass anything for this argument, the default JSON is used
+	- If no `subunits.json` file is present, or if you dont pass anything for this argument, the [default subunits JSON](./subunits.json) is used
 	- If you pass a reference to a different JSON for this argument, it will attempt to find the file you specified, else it will fall back to using the default JSON
-	- If you want to customise the default subunits JSON, you can use the `smiles-get-subunits` command. This will insert the default JSON into the current working directory, for you to add/remove/modify subunits as needed
+	- If you want to customise the default subunits JSON, you can use the `subunits-json` command. This will insert the default JSON into the current working directory, for you to add/remove/modify subunits as needed
 - `-c --conserve`
 	- By default all chains are generated using randomly selected subunits from the subunits JSON.
 	- If you want to ensure 1 or more specific subunits is present in all chains generated, you can use this argument
@@ -81,11 +83,11 @@ Take a large number of SMILES files, sort them by druglikeness, select a range f
 	- By default the range is set to the same as the requested number, meaning you get the top 100 of the sorted list
 	- Since this means that there will be a lot less diversity, you may wish to make the range larger than the desired number, but smaller than the total amount of SMILES
 	- For example, if you have generated 1,000,000 SMILES, and you want to sort them and turn 100 of them into mol2 files for docking, but you want a bit more diversity, you could set the range to 1000. This will select 100 randomly from the top 1000 SMILES files, as oposed to picking the exact top 100.
-- `-s --subunits` - default: `subunits.json`
+- `-s --subunits` - default: [subunits.json](./subunits.json)
 	- Where to find the `subunits.json` file. This should be the same JSON file used in the `smiles-generate` step for the current working directory
-	- As with `smiles-generate`, by default if you dont pass this agument and `subunits.json` is not present in the working directory, the default subunits JSON is used.
+	- As with `smiles-generate`, by default if you dont pass this agument and `subunits.json` is not present in the working directory, the [default subunits JSON](./subunits.json) is used.
 
-## smiles-get-subunits
+## subunits-json
 
 Copy the default `subunits.json` into the current working directory. You can then edit it as needed, and `smiles-generate` will use your local copy when running in that directory, instead of the default subunits JSON file
 
