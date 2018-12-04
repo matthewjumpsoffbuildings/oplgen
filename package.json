@@ -2,7 +2,7 @@
   "name": "smiles-generator",
   "version": "1.0.0",
   "description": "Generate sequences of SMILES objects",
-  "repository": "git@bitbucket.org:matthewjumpsoffbuildings/smiles-generator.git",
+  "repository": "git@github.com:matthewjumpsoffbuildings/smiles-generator.git",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf converted; rm -rf output"
