@@ -2,7 +2,7 @@
 
 Simple command line tools to generate cyclic and linear oligopeptides in SMILES format, filter them based on drug-likeness, and perform ligand preparation for molecular docking using openbabel to convert to mol2
 
-Developed by @matthewjumpsoffbuildings, Co-Developed by Ezra
+Developed by [@matthewjumpsoffbuildings](https://github.com/matthewjumpsoffbuildings), Co-Developed by Ezra
 
 ## Installation
 
