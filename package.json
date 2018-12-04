@@ -4,9 +4,6 @@
   "description": "Generate sequences of SMILES objects",
   "repository": "git@github.com:matthewjumpsoffbuildings/smiles-generator.git",
   "main": "index.js",
-  "scripts": {
-    "clean": "rm -rf converted; rm -rf output"
-  },
   "bin": {
     "smiles-generate": "./generate.js",
     "smiles-filter": "./filter.js",
