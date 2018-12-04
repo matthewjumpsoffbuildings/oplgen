@@ -1,4 +1,5 @@
 Requirements
+
 - node+npm
 - openbabel
 - dock6
@@ -26,8 +27,6 @@ Filter:
 ```
 
 
-after obabel conversion concatenate all mol2 files into single mol2 for dock
-
 garbage collection, especially in random/cyclic generate js (linear seems to be good)
 
 how to handle running generate/filter over an existing folder of outputs. global binary could help
@@ -40,6 +39,5 @@ Compile Dock6
 steps
 
 - generate.js to generate tons of smiles
-- filter.js to sort by properties like logP and charge and then pick the top 100 or so smiles
-- mol2.js to convert those top 100 or so smiles to mol2
+- filter.js to sort by properties like logP and charge and then pick the top 100 or so smiles and convert those top 100 or so smiles to mol2
 - dock.js to dock the top 100 mol2s
