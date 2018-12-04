@@ -1,13 +1,13 @@
 {
-  "name": "smiles-generator",
+  "name": "pepgen",
   "version": "1.0.2",
-  "description": "Generate sequences of SMILES objects",
-  "repository": "git@github.com:matthewjumpsoffbuildings/smiles-generator.git",
+  "description": "Generate oligopeptides in SMILES and mol2 format",
+  "repository": "git@github.com:matthewjumpsoffbuildings/pepgen.git",
   "main": "index.js",
   "bin": {
-    "smiles-generate": "./generate.js",
-    "smiles-filter": "./filter.js",
-    "subunits-json": "./get-subunits.js"
+    "pep-generate": "./generate.js",
+    "pep-filter": "./filter.js",
+    "pep-subunits": "./get-subunits.js"
   },
   "author": "matthewjumpsoffbuildings",
   "license": "ISC",
