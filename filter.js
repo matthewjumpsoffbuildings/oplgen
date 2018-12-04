@@ -35,7 +35,7 @@ var file,
 for(i = 0; i<sourceFilenames.length; i++){
 
 	filename = sourceFilenames[i]
-	filenameSubunits = filename.replace(/^(cyclic|linear)\.\d+\./, "").replace(/\.smiles$/, "")
+	filenameSubunits = filename.replace(/^(cyclo|linear)\.\d+\./, "").replace(/\.smiles$/, "")
 	filenameSplit = filenameSubunits.split(delimiter)
 	data = Object.assign({ score: 0, filename: filename }, props)
 

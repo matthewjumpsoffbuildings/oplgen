@@ -7,7 +7,8 @@ const options = commandLineArgs([
 	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "mol2" },
 	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
-	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 }
+	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 },
+	{ name: 'range', alias: 'r', type: Number, defaultValue: 100 }
 ])
 
 const delimiter = options.delimiter
@@ -18,8 +19,9 @@ const outputFolder = options.outputFolder
 console.log("Loading files from ", sourceFolder)
 const sourceFilenames = fs.readdirSync(sourceFolder)
 
-
-const subunitsString = fs.readFileSync(options.subunits)
+const appRoot = require('app-root-path')
+const jsonPath = fs.existsSync(options.subunits) ? options.subunits : appRoot + '/subunits.json'
+const subunitsString = fs.readFileSync(jsonPath)
 const subunits = JSON.parse(subunitsString)
 
 // normalize props (/2)

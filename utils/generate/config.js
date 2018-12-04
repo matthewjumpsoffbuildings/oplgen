@@ -16,7 +16,7 @@ const options = commandLineArgs([
 ])
 
 const TYPE_LINEAR = 'linear'
-const TYPE_CYCLIC = 'cyclic'
+const TYPE_CYCLIC = 'cyclo'
 const METHOD_SEQUENTIAL = 'sequential'
 const METHOD_RANDOM = 'random'
 
@@ -43,9 +43,11 @@ if(options.conserve){
 }
 
 // load subunit SMILES
+const appRoot = require('app-root-path')
+const jsonPath = fs.existsSync(subunitsFile) ? subunitsFile : appRoot + '/subunits.json'
 const subunitNames = []
 const subunits = []
-const subunitsHash = JSON.parse( fs.readFileSync(subunitsFile))
+const subunitsHash = JSON.parse( fs.readFileSync(jsonPath))
 var i = 0;
 for(var s in subunitsHash){
 	subunitNames.push(s)

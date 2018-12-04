@@ -15,6 +15,7 @@
   "license": "ISC",
   "preferGlobal": true,
   "dependencies": {
+    "app-root-path": "^2.1.0",
     "cli-progress": "^2.1.0",
     "command-line-args": "^5.0.2",
     "fs-extra": "^7.0.1",
