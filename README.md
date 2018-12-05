@@ -18,7 +18,7 @@ Department of Molecular Phycology
 
 Before installing, ensure you have the following requirements
 
-- [node+npm](https://nodejs.org/en/download/)
+- [node+npm](https://nodejs.org/en/download/) (recent versions)
 - [openbabel](http://openbabel.org/wiki/Category:Installation) (for mol2 conversion)
 
 Once you have the requirements, run the following in a cmd/terminal:

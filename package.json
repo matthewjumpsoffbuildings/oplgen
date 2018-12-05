@@ -13,16 +13,6 @@
     "oplsub": "./get-subunits.js"
   },
   "author": "matthewjumpsoffbuildings",
-  "keywords": [
-    "Peptide",
-    "Oligopeptide",
-    "SMILES",
-    "mol2",
-    "Bioinformatics",
-    "OpenBabel",
-    "Ligand",
-    "Dock6"
-  ],
   "license": "ISC",
   "preferGlobal": true,
   "dependencies": {
@@ -32,5 +22,15 @@
     "get-divisors": "^1.0.0",
     "number-theory": "^1.1.0",
     "underscore": "^1.9.1"
-  }
+  },
+  "keywords": [
+    "Peptide",
+    "Oligopeptide",
+    "SMILES",
+    "mol2",
+    "Bioinformatics",
+    "OpenBabel",
+    "Ligand",
+    "Dock6"
+  ]
 }
