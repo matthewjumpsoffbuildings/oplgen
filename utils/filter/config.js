@@ -39,7 +39,7 @@ for(var i in subunits){
 const ProgressBar = require('progress')
 const bar = new ProgressBar(
 	'Progress :bar :percent :current/:total smiles sorted ',
-	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 100 }
+	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
 module.exports = {

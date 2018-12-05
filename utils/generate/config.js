@@ -91,7 +91,7 @@ if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory
 const ProgressBar = require('progress')
 const bar = new ProgressBar(
 	'Progress :bar :percent :current/:total sequences found ',
-	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 100 }
+	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
 
