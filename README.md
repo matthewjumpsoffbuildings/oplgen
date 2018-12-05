@@ -87,7 +87,7 @@ pep-filter -n 100 -r 1000
 pepflt -n 20 -r 400
 ```
 
-Take a large number of SMILES files, sort them by drug-likeness, select a range from the top scorers, convert them to mol2 and create an `output.mol2` file ready for dock6. If an `output.mol2` file already exists, newly converted mol2s will be appended to it. As with `pep-generate` duplicates are not created, and you may want to do this stage in batches since the openbabel mol2 conversion may take while for each SMILES file
+Take a large number of SMILES files, sort them by drug-likeness, select a range from the top scorers, convert them to mol2 and create an `output.mol2` ligand file ready for dock6. If an `output.mol2` file already exists, newly converted mol2s will be appended to it. As with `pep-generate` duplicates are not created, and you may want to do this stage in batches since the openbabel mol2 conversion may take while for each SMILES file. You can also use a tool like [UCSF Chimera](https://www.cgl.ucsf.edu/chimera/download.html) to view individual mol2 files that are output in the `mol2` folder
 
 - `-n --number` - default: `100`
 	- How many of the generated SMILES do we want to convert to mol2 for dock6? Usually this will be a small sub-set of the total number of generated SMILES.
