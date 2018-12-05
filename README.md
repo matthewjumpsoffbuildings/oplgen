@@ -40,7 +40,7 @@ pepgen -l 4 -n 3000 --linear
 
 Generate a specified number of oligopeptides in SMILES format from a collection of subunits stored in JSON format. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
 
-This command can be run multiple times in the same working directory as long as you only generate one type of oligopeptide (cyclic or linear) and use the same value for the `-l`/`--sequenceLength`. Duplicates will not be created. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate the SMILES in batches
+This command can be run multiple times in the same working directory as long as you only generate one type of oligopeptide (cyclic or linear) and use the same value for the `-l`/`--sequenceLength` each time you run it. Duplicates will not be created. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate the SMILES in batches
 
 The following options are available:
 
