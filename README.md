@@ -55,7 +55,7 @@ The following options are available:
 	- By default, the program has a subunits JSON file with 32 common subunits in its install directory
 	- If no `subunits.json` file is present, or if you dont pass anything for this argument, the [default subunits JSON](./subunits.json) is used
 	- If you pass a reference to a different JSON for this argument, it will attempt to find the file you specified, else it will fall back to using the default JSON
-	- If you want to customise the default subunits JSON, you can use the `pep-subunits` command. This will insert the default JSON into the current working directory, for you to add/remove/modify subunits as needed
+	- If you want to customise the default subunits JSON, you can use the [`pep-subunits`](#pep-subunits) command. This will insert the default JSON into the current working directory, for you to add/remove/modify subunits as needed
 - `-c --conserve`
 	- By default all chains are generated using randomly selected subunits from the subunits JSON.
 	- If you want to ensure 1 or more specific subunits is present in all chains generated, you can use this argument
