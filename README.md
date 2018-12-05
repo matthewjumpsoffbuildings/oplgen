@@ -42,6 +42,8 @@ Generate a specified number of oligopeptides in SMILES format from a collection 
 
 This command can be run multiple times in the same working directory as long as you only generate one type of oligopeptide (cyclic or linear) and use the same value for the `-l`/`--sequenceLength` each time you run it. Duplicates will not be created. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate the SMILES in batches
 
+Once you have generated the desired number of SMILES, use [`pep-filter`](#pep-filter) to select a subset of them based on drug-likeness and automatically convert them to mol2 using openbabel
+
 The following options are available:
 
 - `-l --sequenceLength` - default: `5`
