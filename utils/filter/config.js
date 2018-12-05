@@ -17,6 +17,7 @@ const sourceFolder = options.inputFolder
 const outputFolder = options.outputFolder
 console.log("Loading files from ", sourceFolder)
 const sourceFilenames = fs.readdirSync(sourceFolder)
+const numOfFiles = sourceFilenames.length
 
 const number = Math.min(options.number, sourceFilenames.length)
 const range = options.range ? Math.max(options.range, options.number) : options.number
@@ -46,6 +47,7 @@ module.exports = {
 	range,
 	sourceFolder,
 	sourceFilenames,
+	numOfFiles,
 	outputFolder,
 	subunits,
 	delimiter,

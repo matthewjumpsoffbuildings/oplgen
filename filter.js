@@ -3,7 +3,7 @@
 const startTime = Date.now()
 
 const {
-	sourceFolder, sourceFilenames, outputFolder, delimiter, bar, number, range, subunits
+	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter, bar, number, range, subunits
 } = require('./utils/filter/config')
 
 const props = {
@@ -30,7 +30,7 @@ var file,
 
 
 // calculate the props for each one
-for(i = 0; i<sourceFilenames.length; i++){
+for(i = 0; i<numOfFiles; i++){
 
 	filename = sourceFilenames[i]
 	filenameSubunits = filename.replace(/^(cyclo|linear)\.\d+\./, "").replace(/\.smiles$/, "")
@@ -57,7 +57,7 @@ for(i = 0; i<sourceFilenames.length; i++){
 }
 
 // score the props for each one
-for(i = 0; i<sourceFilenames.length; i++){
+for(i = 0; i<numOfFiles; i++){
 	file = sourceFilenames[i]
 	filename = file.filename
 
@@ -106,7 +106,7 @@ filtered.sort(function(a, b){
 
 
 // convert to mol2
-console.log(`\nSorted ${sourceFilenames.length} smiles, converting to mol2`)
+console.log(`\nSorted ${numOfFiles} smiles, converting to mol2`)
 const fs = require('fs-extra')
 const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
