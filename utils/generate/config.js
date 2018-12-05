@@ -87,9 +87,12 @@ if(conserved.length) console.log(`Conserving subunits at the following positions
 console.log(`\nUsing subunit SMILES from the '${subunitsFile}' file (found ${subunitsLength} subunits)`)
 if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
-// create a new progress bar instance and use shades_classic theme
-const cliProgress = require('cli-progress');
-const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {percentage}%  {value}/{total} sequences found'}, cliProgress.Presets.legacy)
+// create a new progress bar instance
+const ProgressBar = require('progress')
+const bar = new ProgressBar(
+	'Progress :bar :percent :current/:total sequences found',
+	{ total: numOfSequences, incomplete: '░', complete: '█' }
+)
 
 
 

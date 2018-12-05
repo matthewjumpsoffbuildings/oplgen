@@ -6,8 +6,6 @@ const {
 	sourceFolder, sourceFilenames, outputFolder, delimiter, bar, number, range, subunits
 } = require('./utils/filter/config')
 
-bar.start(sourceFilenames.length, 0, {matches: 0})
-
 const props = {
 	miLogP: 0,
 	TPSA: 0,
@@ -55,7 +53,7 @@ for(i = 0; i<sourceFilenames.length; i++){
 
 	sourceFilenames[i] = data
 
-	bar.update(i/2)
+	if(i % 2) bar.tick()
 }
 
 // score the props for each one
@@ -85,11 +83,10 @@ for(i = 0; i<sourceFilenames.length; i++){
 		file.score += score
 	}
 
-	bar.update((sourceFilenames.length/2)+i/2)
+	if(i % 2) bar.tick()
 }
 
-bar.update(sourceFilenames.length)
-bar.stop()
+bar.update(1)
 
 
 // sort based on score
@@ -109,6 +106,7 @@ filtered.sort(function(a, b){
 
 
 // convert to mol2
+console.log(`\nSorted ${sourceFilenames.length} smiles, converting to mol2`)
 const fs = require('fs-extra')
 const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)

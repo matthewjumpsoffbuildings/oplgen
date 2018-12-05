@@ -27,13 +27,10 @@ const generate = method == METHOD_SEQUENTIAL ?
 	(sequenceType == TYPE_CYCLIC ? generateCyclic : generateLinear) :
 	generateRandom
 
-// start the progress bar
-bar.start(numOfSequences, 0)
-
 // Start the main loop
 let iterationInterval = setInterval(function(){
 
-	bar.update(sequences)
+	bar.update(sequences/numOfSequences)
 	let noNewFoundTime = Date.now() - lastUniqueTime
 
 	if( (RUN_FOREVER && noNewFoundTime < TIMEOUT) ||
@@ -47,7 +44,7 @@ let iterationInterval = setInterval(function(){
 
 		clearInterval(iterationInterval)
 
-		bar.stop()
+		bar.update(1)
 
 		if(noNewFoundTime >= TIMEOUT) console.log(`\nDidnt find any unique sequences for ${TIMEOUT/1000} seconds, terminating`)
 

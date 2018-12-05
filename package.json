@@ -16,11 +16,11 @@
   "license": "ISC",
   "preferGlobal": true,
   "dependencies": {
-    "cli-progress": "^2.1.0",
     "command-line-args": "^5.0.2",
     "fs-extra": "^7.0.1",
     "get-divisors": "^1.0.0",
     "number-theory": "^1.1.0",
+    "progress": "^2.0.3",
     "underscore": "^1.9.1"
   },
   "keywords": [

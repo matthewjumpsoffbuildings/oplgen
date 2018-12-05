@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const getConserved = require('./getConserved')
 const {numOfSequences, sequenceType, sequenceLength, delimiter, outputDirectory, subunitNames, linearMaximum,
-	dontOutput, maximum, subunits, subunitsLength, bar, method, METHOD_SEQUENTIAL, TYPE_CYCLIC, ringClosureDigit} = require('./config')
+	dontOutput, maximum, subunits, subunitsLength, method, METHOD_SEQUENTIAL, TYPE_CYCLIC, ringClosureDigit} = require('./config')
 
 var indexes = [], sequenceIndexArray, sequenceIndexString, sequenceHashArray, k, i, sequenceString, filename
 
