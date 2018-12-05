@@ -36,7 +36,7 @@ for(var i in subunits){
 
 // create a new progress bar instance and use shades_classic theme
 const cliProgress = require('cli-progress');
-const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {percentage}%  {value}/{total} smiles'}, cliProgress.Presets.shades_classic)
+const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {percentage}%  {value}/{total} smiles'}, cliProgress.Presets.legacy)
 
 
 module.exports = {

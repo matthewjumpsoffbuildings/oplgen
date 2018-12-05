@@ -89,7 +89,7 @@ if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory
 
 // create a new progress bar instance and use shades_classic theme
 const cliProgress = require('cli-progress');
-const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {percentage}%  {value}/{total} sequences found'}, cliProgress.Presets.shades_classic)
+const bar = new cliProgress.Bar({hideCursor: false, format: 'Progress {bar} {percentage}%  {value}/{total} sequences found'}, cliProgress.Presets.legacy)
 
 
 
