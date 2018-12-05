@@ -43,8 +43,8 @@ if(options.conserve){
 }
 
 // load subunit SMILES
-const appRoot = require('app-root-path')
-const jsonPath = fs.existsSync(subunitsFile) ? subunitsFile : appRoot + '/subunits.json'
+const defaultJSONPath = require('../../subunits-path')
+const jsonPath = fs.existsSync(subunitsFile) ? subunitsFile : defaultJSONPath
 const subunitNames = []
 const subunits = []
 const subunitsHash = JSON.parse( fs.readFileSync(jsonPath))
