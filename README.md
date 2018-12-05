@@ -3,16 +3,16 @@
 Simple command line tools to generate cyclic and linear oligopeptides in SMILES format, filter them based on drug-likeness, and perform ligand file preparation using Open Babel to output ready-to-dock mol2 files
 
 Developed by
-[@matthewjumpsoffbuildings](https://github.com/matthewjumpsoffbuildings)
-Ezra Rex
-Flinders University of South Australia
-College of Science and Engineering
+[@matthewjumpsoffbuildings](https://github.com/matthewjumpsoffbuildings)  
+Ezra Rex  
+Flinders University of South Australia  
+College of Science and Engineering  
 Molecular Biology and Biotechnology Research Cluster
 
-In collaboration with
-Chinese Academy of Sciences
-Yantai Institute of Coastal Zone Research
-department of Molecular Phycology
+In collaboration with  
+Chinese Academy of Sciences  
+Yantai Institute of Coastal Zone Research  
+Department of Molecular Phycology
 
 ## Installation
 
