@@ -6,7 +6,7 @@ const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maxi
 var indexes = [], conserved, i, k
 
 if(sequenceType == TYPE_LINEAR && method == METHOD_SEQUENTIAL){
-	for(var i = 0; i<sequenceLength; i++){
+	for(i = 0; i<sequenceLength; i++){
 		conserved = getConserved(i)
 		indexes[i] = conserved > -1 ?
 			conserved :

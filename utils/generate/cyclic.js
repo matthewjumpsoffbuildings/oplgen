@@ -3,11 +3,11 @@ const getConserved = require('./getConserved')
 const {numOfSequences, sequenceType, sequenceLength, delimiter, outputDirectory, subunitNames, linearMaximum,
 	dontOutput, maximum, subunits, subunitsLength, method, METHOD_SEQUENTIAL, TYPE_CYCLIC, ringClosureDigit} = require('./config')
 
-var indexes = [], sequenceIndexArray, sequenceIndexString, sequenceHashArray, k, i, sequenceString, filename
+var indexes = [], conserved, sequenceIndexArray, sequenceIndexString, sequenceHashArray, k, i, sequenceString, filename
 
 if(sequenceType == TYPE_CYCLIC && method == METHOD_SEQUENTIAL){
-	for(var i = 0; i<sequenceLength; i++){
-		var conserved = getConserved(i)
+	for(i = 0; i<sequenceLength; i++){
+		conserved = getConserved(i)
 		indexes[i] = conserved > -1 ?
 			conserved :
 			(numOfSequences < maximum ? Math.floor(Math.random()*subunitsLength) : 0)
