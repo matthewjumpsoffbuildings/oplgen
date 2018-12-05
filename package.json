@@ -1,16 +1,16 @@
 {
-  "name": "pepgen",
-  "version": "1.0.3",
-  "description": "PepGen - Generate oligopeptides in SMILES format with filtering and ligand preparation for molecular docking",
-  "repository": "git@github.com:matthewjumpsoffbuildings/pepgen.git",
+  "name": "oplgen",
+  "version": "1.0.0",
+  "description": "OPLGen - Oligopeptide Ligand Generator. Generate oligopeptides in SMILES format with filtering and ligand preparation for molecular docking",
+  "repository": "git@github.com:matthewjumpsoffbuildings/oplgen.git",
   "main": "index.js",
   "bin": {
-    "pep-generate": "./generate.js",
-    "pepgen": "./generate.js",
-    "pep-filter": "./filter.js",
-    "pepflt": "./filter.js",
-    "pep-subunits": "./get-subunits.js",
-    "pepsub": "./get-subunits.js"
+    "opl-generate": "./generate.js",
+    "oplgen": "./generate.js",
+    "opl-filter": "./filter.js",
+    "oplflt": "./filter.js",
+    "opl-subunits": "./get-subunits.js",
+    "oplsub": "./get-subunits.js"
   },
   "author": "matthewjumpsoffbuildings",
   "keywords": [
@@ -19,7 +19,9 @@
     "SMILES",
     "mol2",
     "Bioinformatics",
-    "OpenBabel"
+    "OpenBabel",
+    "Ligand",
+    "Dock6"
   ],
   "license": "ISC",
   "preferGlobal": true,
