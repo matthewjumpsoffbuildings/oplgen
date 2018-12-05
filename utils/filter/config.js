@@ -38,7 +38,7 @@ for(var i in subunits){
 // create a new progress bar instance
 const ProgressBar = require('progress')
 const bar = new ProgressBar(
-	'Progress :bar :percent :current/:total smiles sorted',
+	'Progress :bar :percent :current/:total smiles sorted ',
 	{ total: sourceFilenames.length, incomplete: '░', complete: '█' }
 )
 
