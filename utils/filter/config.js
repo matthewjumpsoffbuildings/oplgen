@@ -48,7 +48,7 @@ const obabelBar = new ProgressBar(
 )
 
 // show warning if not running in tty console
-require('../tty-warning')("oplflt.cmd")
+require('../tty-warning')("oplflt")
 
 module.exports = {
 	number,

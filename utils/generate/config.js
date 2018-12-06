@@ -95,7 +95,7 @@ const bar = new ProgressBar(
 )
 
 // show warning if not running in tty console
-require('../tty-warning')("oplgen.cmd")
+require('../tty-warning')("oplgen")
 
 
 // export everything
