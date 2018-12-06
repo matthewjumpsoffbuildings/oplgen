@@ -1,6 +1,6 @@
 {
-  "name": "oplgen",
-  "version": "1.0.0",
+  "name": "oplgen2",
+  "version": "1.0.4",
   "description": "OPLGen - Oligopeptide Ligand Generator. Generate oligopeptides in SMILES format with filtering and ligand preparation for molecular docking",
   "repository": "git@github.com:matthewjumpsoffbuildings/oplgen.git",
   "main": "index.js",
@@ -21,6 +21,7 @@
     "get-divisors": "^1.0.0",
     "number-theory": "^1.1.0",
     "progress": "^2.0.3",
+    "ttys": "0.0.3",
     "underscore": "^1.9.1"
   },
   "keywords": [

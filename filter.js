@@ -84,7 +84,7 @@ for(i = 0; i<numOfFiles; i++){
 		file.score += score
 	}
 
-	if(i % 1000 == 0) bar.tick(500)
+	if(i % 1000 == 0 && bar.curr < bar.total-500) bar.tick(500)
 }
 
 bar.update(1)

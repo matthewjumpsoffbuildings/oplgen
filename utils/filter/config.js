@@ -37,9 +37,10 @@ for(var i in subunits){
 
 // create a new progress bar instance
 const ProgressBar = require('progress')
+const ttys = require('ttys')
 const bar = new ProgressBar(
 	'Progress :bar :percent :current/:total smiles sorted ',
-	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 200 }
+	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 200, stream: ttys.stdout }
 )
 
 module.exports = {
