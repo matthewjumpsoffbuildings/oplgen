@@ -35,7 +35,7 @@ sudo npm install -g oplgen
 
 To update to the latest version, use the following command (with `sudo` at the start if needed):
 ```
-npm update -g oplgen
+npm install -g oplgen@latest
 ```
 
 ## Usage
