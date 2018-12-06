@@ -27,7 +27,7 @@ var file,
 	subunit,
 	i, k, prop,
 	score, val,
-	spawn
+	spawn, spawnStdErr
 
 console.log(`\nSorting ${numOfFiles} smiles files, selecting ${number} from the top ${range}\n`)
 
