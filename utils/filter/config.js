@@ -22,7 +22,7 @@ const numOfFiles = sourceFilenames.length
 const number = Math.min(options.number, sourceFilenames.length)
 const range = options.range ? Math.max(options.range, options.number) : options.number
 
-const defaultJSONPath = require('../../subunits-path')
+const defaultJSONPath = require('../subunits-path')
 const jsonPath = fs.existsSync(options.subunits) ? options.subunits : defaultJSONPath
 const subunitsString = fs.readFileSync(jsonPath)
 const subunits = JSON.parse(subunitsString)

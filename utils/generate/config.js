@@ -43,7 +43,7 @@ if(options.conserve){
 }
 
 // load subunit SMILES
-const defaultJSONPath = require('../../subunits-path')
+const defaultJSONPath = require('../subunits-path')
 const jsonPath = fs.existsSync(subunitsFile) ? subunitsFile : defaultJSONPath
 const subunitNames = []
 const subunits = []
