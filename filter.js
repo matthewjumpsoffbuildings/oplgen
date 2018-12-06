@@ -28,6 +28,7 @@ var file,
 	i, k, prop,
 	score, val
 
+bar.update(0)
 
 // calculate the props for each one
 for(i = 0; i<numOfFiles; i++){
@@ -53,7 +54,7 @@ for(i = 0; i<numOfFiles; i++){
 
 	sourceFilenames[i] = data
 
-	if(i % 2) bar.tick()
+	if(i % 1000 == 0) bar.tick(500)
 }
 
 // score the props for each one
@@ -83,7 +84,7 @@ for(i = 0; i<numOfFiles; i++){
 		file.score += score
 	}
 
-	if(i % 2) bar.tick()
+	if(i % 1000 == 0) bar.tick(500)
 }
 
 bar.update(1)

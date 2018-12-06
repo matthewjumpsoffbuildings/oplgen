@@ -27,10 +27,13 @@ const generate = method == METHOD_SEQUENTIAL ?
 	(sequenceType == TYPE_CYCLIC ? generateCyclic : generateLinear) :
 	generateRandom
 
+bar.update(0)
+
 // Start the main loop
 let iterationInterval = setInterval(function(){
 
-	bar.update(sequences/numOfSequences)
+	if(iterations % 1000 == 0) bar.update(sequences/numOfSequences)
+
 	let noNewFoundTime = Date.now() - lastUniqueTime
 
 	if( (RUN_FOREVER && noNewFoundTime < TIMEOUT) ||
