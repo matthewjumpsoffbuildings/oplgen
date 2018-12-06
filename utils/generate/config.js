@@ -4,7 +4,7 @@ const enumerate = require('./enumerate')
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'number', alias: 'n', type: Number, defaultValue: 1000000 },
+	{ name: 'number', alias: 'n', type: Number, defaultValue: 100000 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
 	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "smiles" },
 	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
@@ -94,8 +94,8 @@ const bar = new ProgressBar(
 	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
-const ttyError = require('../tty-message')("oplgen.cmd")
-if(ttyError) console.log(ttyError)
+// show warning if not running in tty console
+require('../tty-warning')("oplgen.cmd")
 
 
 // export everything

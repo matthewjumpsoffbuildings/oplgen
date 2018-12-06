@@ -3,7 +3,7 @@
 const startTime = Date.now()
 
 const {
-	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter, bar, number, range, subunits
+	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter, filterBar, obabelBar, number, range, subunits
 } = require('./utils/filter/config')
 
 const props = {
@@ -26,11 +26,12 @@ var file,
 	data,
 	subunit,
 	i, k, prop,
-	score, val
+	score, val,
+	spawn
 
-console.log(`\nFiltering ${numOfFiles} smiles files, selecting ${number} from the top ${range}\n`)
+console.log(`\nSorting ${numOfFiles} smiles files, selecting ${number} from the top ${range}\n`)
 
-bar.update(0)
+filterBar.update(0)
 
 // calculate the props for each one
 for(i = 0; i<numOfFiles; i++){
@@ -56,7 +57,7 @@ for(i = 0; i<numOfFiles; i++){
 
 	sourceFilenames[i] = data
 
-	if(i % 1000 == 0) bar.tick(500)
+	if(i % 1000 == 0) filterBar.update( (i/numOfFiles)*.5 )
 }
 
 // score the props for each one
@@ -86,11 +87,11 @@ for(i = 0; i<numOfFiles; i++){
 		file.score += score
 	}
 
-	if(i % 1000 == 0 && bar.curr < bar.total-500) bar.tick(500)
+	if(i % 1000 == 0) filterBar.update( (i/numOfFiles)*.5+.5 )
 }
 
-// finish off the bar
-if(bar.curr != bar.total) bar.update(1)
+// finish off the filterBar
+if(filterBar.curr != filterBar.total) filterBar.update(1)
 
 
 // sort based on score
@@ -110,11 +111,13 @@ filtered.sort(function(a, b){
 
 
 // convert to mol2
-console.log(`\nProcessed ${numOfFiles} smiles, converting ${number} to mol2`)
+console.log(`\nSorted ${numOfFiles} smiles, converting ${number} from the top ${range} to mol2\n`)
 const fs = require('fs-extra')
-const { execSync } = require('child_process')
+const { spawnSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
 const wip = "00.UNCONVERTED."
+
+obabelBar.update(0)
 
 for(i = 0; i < number; i++)
 {
@@ -132,18 +135,26 @@ for(i = 0; i < number; i++)
 	else if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
 		continue
 
-	console.log(`\nconverting to mol2 - ${i+1}/${number}`)
-
 	// step 1 of obabel
-	console.log(`\n${filename} - obabel step 1`)
-	execSync(`obabel -ismi ${sourceFolder}/${filename}.smiles -osy2 -O ${outputFolder}/${wip}${k}${filename}.mol2 --gen3d --partialcharge`)
+	spawn = spawnSync(`obabel`, [`-ismi`, `${sourceFolder}/${filename}.smiles`, `-osy2`, `-O`, `${outputFolder}/${wip}${k}${filename}.mol2`, `--gen3d`, `--partialcharge`])
+
+	// log errors here if needed
+	spawnStdErr = spawn.stderr.toString()
+	if(spawnStdErr && spawnStdErr.search(/error/i) > -1) {
+		console.log(`\n${spawnStdErr}\nFile: ${filtered[i].filename}\nThere may be an issue with one of the subunit smiles\nSkipping this file for now`)
+		// delete wip file and move on
+		fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
+		continue
+	}
 
 	// step 2 of obabel
-	console.log(`${filename} - obabel step 2`)
-	execSync(`obabel -isy2 ${outputFolder}/${wip}${k}${filename}.mol2 -osy2 -O ${outputFolder}/${k}${filename}.mol2 -p 7 --minimize --conformer`)
-	fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
-}
+	spawn = spawnSync(`obabel`, [`-isy2`, `${outputFolder}/${wip}${k}${filename}.mol2`, `-osy2`, `-O`, `${outputFolder}/${k}${filename}.mol2`, `-p`, `7`, `--minimize`, `--conformer`])
 
+	// delete wip file
+	fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
+
+	obabelBar.update((i+1)/number)
+}
 
 // combine all mol2 files into one big output mol2
 const outputFilenames = fs.readdirSync(outputFolder)
@@ -167,7 +178,8 @@ for(i = 0; i < outputFilenames.length; i++)
 	totalOutputs++
 }
 
-
+// finish off progress bar
+if(obabelBar.curr != number) obabelBar.update(1)
 
 // done
 const endTime = Date.now()

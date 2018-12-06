@@ -37,13 +37,18 @@ for(var i in subunits){
 
 // create a new progress bar instance
 const ProgressBar = require('progress')
-const bar = new ProgressBar(
+const filterBar = new ProgressBar(
 	'Progress :bar :percent :current/:total smiles sorted ',
 	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
-const ttyError = require('../tty-message')("oplflt.cmd")
-if(ttyError) console.log(ttyError)
+const obabelBar = new ProgressBar(
+	'Progress :bar :percent :current/:total smiles processed ',
+	{ total: number, incomplete: '░', complete: '█', renderThrottle: 200 }
+)
+
+// show warning if not running in tty console
+require('../tty-warning')("oplflt.cmd")
 
 module.exports = {
 	number,
@@ -54,5 +59,6 @@ module.exports = {
 	outputFolder,
 	subunits,
 	delimiter,
-	bar
+	filterBar,
+	obabelBar
 }

@@ -58,8 +58,8 @@ The following options are available:
 
 - `-l --sequenceLength` - default: `5`
 	- How long should each generated chain of subunits be?
-- `-n --number` - default: `1000000`
-	- How many SMILES to generate? Given even relatively short chain lengths, the number of possible unique chains is often beyond a home computers capability to generate, so this defaults to `1000000`
+- `-n --number` - default: `100000`
+	- How many SMILES to generate? Given even relatively short chain lengths, the number of possible unique chains is often beyond a home computers capability to generate, so this defaults to `100000`
 	- If you pass a number greater than the possible number of unique chains for the given length/subunits, it will generate all possible unique chains
 	- If you pass a number less than 1, it will generate all possible unique chains for the given length/subunits
 - `-s --subunits` - default: [subunits.json](./subunits.json)
