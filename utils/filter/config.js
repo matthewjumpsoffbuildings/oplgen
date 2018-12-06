@@ -15,7 +15,7 @@ const delimiter = options.delimiter
 
 const sourceFolder = options.inputFolder
 const outputFolder = options.outputFolder
-console.log("Loading files from ", sourceFolder)
+console.log("Loading files from ", sourceFolder, "\n")
 const sourceFilenames = fs.readdirSync(sourceFolder)
 const numOfFiles = sourceFilenames.length
 
