@@ -42,7 +42,7 @@ const bar = new ProgressBar(
 	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
-const ttyError = require('../tty-tty-message')("oplflt.cmd")
+const ttyError = require('../tty-message')("oplflt.cmd")
 if(ttyError) console.log(ttyError)
 
 module.exports = {
