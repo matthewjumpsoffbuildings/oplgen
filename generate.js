@@ -47,7 +47,7 @@ let iterationInterval = setInterval(function(){
 
 		clearInterval(iterationInterval)
 
-		bar.update(1)
+		if(bar.curr != bar.total) bar.update(1)
 
 		if(noNewFoundTime >= TIMEOUT) console.log(`\nDidnt find any unique sequences for ${TIMEOUT/1000} seconds, terminating`)
 

@@ -87,7 +87,8 @@ for(i = 0; i<numOfFiles; i++){
 	if(i % 1000 == 0 && bar.curr < bar.total-500) bar.tick(500)
 }
 
-bar.update(1)
+// finish off the bar
+if(bar.curr ! bar.total) bar.update(1)
 
 
 // sort based on score
