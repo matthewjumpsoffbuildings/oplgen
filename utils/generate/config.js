@@ -89,12 +89,13 @@ if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory
 
 // create a new progress bar instance
 const ProgressBar = require('progress')
-const ttys = require('ttys')
 const bar = new ProgressBar(
 	'Progress :bar :percent :current/:total sequences found ',
-	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200, stream: ttys.stdout }
+	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
+const ttyError = require('../tty')("oplgen.cmd")
+if(ttyError) console.log(ttyError)
 
 
 // export everything
