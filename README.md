@@ -31,6 +31,13 @@ If you are on linux or OSX you may need to add `sudo` at the start of the instal
 sudo npm install -g oplgen
 ```
 
+## Updating
+
+To update to the latest version, use the following command (with `sudo` at the start if needed):
+```
+npm update -g oplgen
+```
+
 ## Usage
 
 This program contains 3 command line utilities:
