@@ -94,7 +94,7 @@ const bar = new ProgressBar(
 	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
-const ttyError = require('../tty')("oplgen.cmd")
+const ttyError = require('../tty-message')("oplgen.cmd")
 if(ttyError) console.log(ttyError)
 
 
