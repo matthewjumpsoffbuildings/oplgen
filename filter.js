@@ -28,6 +28,8 @@ var file,
 	i, k, prop,
 	score, val
 
+console.log(`\nFiltering ${numOfFiles} smiles files, selecting ${number} from the top ${range}\n`)
+
 bar.update(0)
 
 // calculate the props for each one
@@ -88,7 +90,7 @@ for(i = 0; i<numOfFiles; i++){
 }
 
 // finish off the bar
-if(bar.curr ! bar.total) bar.update(1)
+if(bar.curr != bar.total) bar.update(1)
 
 
 // sort based on score
@@ -108,7 +110,7 @@ filtered.sort(function(a, b){
 
 
 // convert to mol2
-console.log(`\nSorted ${numOfFiles} smiles, converting to mol2`)
+console.log(`\nProcessed ${numOfFiles} smiles, converting ${number} to mol2`)
 const fs = require('fs-extra')
 const { execSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
