@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs-extra')
-const subunitsPath = require('./subunits-path')
+const subunitsPath = require('./utils/subunits-path')
 
 fs.copySync(subunitsPath, 'subunits.json')
 
