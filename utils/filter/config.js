@@ -27,14 +27,6 @@ const jsonPath = fs.existsSync(options.subunits) ? options.subunits : defaultJSO
 const subunitsString = fs.readFileSync(jsonPath)
 const subunits = JSON.parse(subunitsString)
 
-// normalize props (/2)
-for(var i in subunits){
-	var subunit = subunits[i]
-	for(var prop in subunit){
-		subunit[prop] = subunit[prop]/2
-	}
-}
-
 // create a new progress bar instance
 const ProgressBar = require('progress')
 const filterBar = new ProgressBar(

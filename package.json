@@ -21,6 +21,7 @@
     "get-divisors": "^1.0.0",
     "number-theory": "^1.1.0",
     "progress": "^2.0.3",
+    "stats-lite": "^2.2.0",
     "underscore": "^1.9.1"
   },
   "keywords": [

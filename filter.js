@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+const fs = require('fs-extra')
+const { spawnSync } = require('child_process')
+
 const startTime = Date.now()
 
 const {
@@ -109,11 +112,49 @@ filtered.sort(function(a, b){
 	return b.score - a.score
 })
 
+// generate stats
+const stats = require('stats-lite')
+const vals = {}, max = {}, min = {}
+var fileStats = "oplflt "+process.argv.slice(2).join(" ")
+fileStats += "\n\nRANK,FILENAME"
+
+for(prop in props){
+	vals[prop] = []
+	fileStats += "," + prop
+}
+for(i = 0; i<number; i++){
+	fileStats += "\n" + (i+1) + "," +filtered[i].filename.replace(".smiles", "")
+	for(prop in props){
+		val = filtered[i][prop]
+		vals[prop].push(val)
+		if(!max.hasOwnProperty(prop) || max[prop] < val) max[prop] = val
+		if(!min.hasOwnProperty(prop) || min[prop] > val) min[prop] = val
+		fileStats += "," + filtered[i][prop]
+	}
+}
+
+var outputStats = "oplflt "+process.argv.slice(2).join(" ")
+outputStats += "\n\nPROPERTY,MIN,MAX,MEAN,MEDIAN,STANDARD DEVIATION,SAMPLE STANDARD DEVIATION"
+
+for(prop in props){
+	outputStats += "\n" + prop
+	outputStats += "," + min[prop]
+	outputStats += "," + max[prop]
+	outputStats += "," + stats.mean(vals[prop])
+	outputStats += "," + stats.median(vals[prop])
+	outputStats += "," + stats.stdev(vals[prop])
+	outputStats += "," + stats.sampleStdev(vals[prop])
+}
+
+outputStats += "\n\n----------------------------------\n\n\n"
+fileStats	+= "\n\n----------------------------------\n\n\n"
+
+fs.appendFileSync(`stats-totals.txt`, outputStats)
+fs.appendFileSync(`stats-files.txt`, fileStats)
+
 
 // convert to mol2
 console.log(`\nSorted ${numOfFiles} smiles, converting ${number} from the top ${range} to mol2\n`)
-const fs = require('fs-extra')
-const { spawnSync } = require('child_process')
 fs.ensureDirSync(outputFolder)
 const wip = "00.UNCONVERTED."
 

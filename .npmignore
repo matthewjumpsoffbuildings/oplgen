@@ -1,4 +1,6 @@
+.DS_Store
 smiles
 mol2
 output.mol2
 TODO
+stats-*.txt
