@@ -2,43 +2,41 @@ const fs = require('fs-extra')
 const path = require('path')
 const enumerate = require('./enumerate')
 
-const cannotDiverge = { 'sequenceLength', 'linear', 'conserve', 'delimiter' }
+const cannotDiverge = { 'sequenceLength':1, 'linear':1, 'conserve':1, 'delimiter':1 }
+var params = false
+if(fs.existsSync(`.params`)) params = JSON.parse( fs.readFileSync(`.params`) )
+
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'number', alias: 'n', type: Number, defaultValue: 100000 },
-	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: 5 },
-	{ name: 'outputDir', alias: 'o', type: String, defaultValue: "smiles" },
-	{ name: 'subunits', alias: 's', type: String, defaultValue: "subunits.json" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
-	{ name: 'linear', type: Boolean, defaultValue: false },
-	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
-	{ name: 'conserve', alias: 'c', type: String, defaultValue: "" },
-	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
+	{ name: 'number', alias: 'n', type: Number, defaultValue: params ? params.number : 100000 },
+	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: params ? params.sequenceLength : 5 },
+	{ name: 'outputDir', alias: 'o', type: String, defaultValue: params ? params.outputDir : "smiles" },
+	{ name: 'subunits', alias: 's', type: String, defaultValue: params ? params.subunits : "subunits.json" },
+	{ name: 'delimiter', alias: 'd', type: String, defaultValue: params ? params.delimiter : "__" },
+	{ name: 'linear', type: Boolean, defaultValue: params ? params.linear : false },
+	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: params ? params.ringClosureDigit : 9 },
+	{ name: 'conserve', alias: 'c', type: String, defaultValue: params ? params.conserve : "" },
+	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: params ? params.sequential : false}
 ])
 
-var param, divergent = [], message
-if(fs.existsSync(`.params`)){
-	const params = JSON.parse( fs.readFileSync(`.params`) )
-	message = `\nYou have run oplgen in this folder already, with different arguments`
-	message += `\nThe following arguments are different from your previous oplgen run:\n`
-
+var param, message = "", divergent = false
+if(params){
 	for(param in cannotDiverge){
 		if(options[param] != params[param]){
-			divergent.push(param)
-			message += `\n * ${param} - current: '${options[param]}', previous: '${params[param]}' `
+			divergent = true
+			message += `\n * ${param} - requested: '${options[param]}', previous: '${params[param]}'`
+			options[param] = params[param]
 		}
 	}
-	if(divergent.length){
-		message += `\n\nIf you want to generate this new configuration of SMILES, create a new folder for them, open a terminal there, and run`
-		message += "\n'oplgen "+process.argv.slice(2).join(" ")+"'"
-		message += `\n\nIf you want to generate more SMILES in this folder using the current configuration`
-		message += `\nJust run 'oplgen' without the ${divergent.join(" ")} arguments\n`
+	if(divergent){
+		console.log(`\nYou have run oplgen previously in this folder with the following arguments set to different values:`)
 		console.log(message)
-		process.exit()
+		console.log(`\nThese arguments have been restored to their previous values. Next time you run oplgen in this folder you should omit them`)
+		console.log(`If you would like to generate different chains, make a new folder for them and run oplgen there\n`)
 	}
 }
 // store options for next run
-fs.writeFileSync(`.params`, JSON.stringify({options}, null, 2))
+fs.writeFileSync(`.params`, JSON.stringify(options, null, 2))
 
 
 
