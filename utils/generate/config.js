@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const enumerate = require('./enumerate')
 
+const cannotDiverge = { 'sequenceLength', 'linear', 'conserve', 'delimiter' }
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 100000 },
@@ -15,34 +16,31 @@ const options = commandLineArgs([
 	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
 ])
 
+var param, divergent = [], message
 if(fs.existsSync(`.params`)){
 	const params = JSON.parse( fs.readFileSync(`.params`) )
-	var divergent = false
-	var message = `\nYou have run oplgen in this folder already, with different arguments`
+	message = `\nYou have run oplgen in this folder already, with different arguments`
 	message += `\nThe following arguments are different from your previous oplgen run:\n`
 
-	for(var param in params){
+	for(param in cannotDiverge){
 		if(options[param] != params[param]){
-			divergent = true
+			divergent.push(param)
 			message += `\n * ${param} - current: '${options[param]}', previous: '${params[param]}' `
 		}
 	}
-	if(divergent){
+	if(divergent.length){
 		message += `\n\nIf you want to generate this new configuration of SMILES, create a new folder for them, open a terminal there, and run`
 		message += "\n'oplgen "+process.argv.slice(2).join(" ")+"'"
 		message += `\n\nIf you want to generate more SMILES in this folder using the current configuration`
-		message += `\nJust run 'oplgen' with no arguments to use the correct settings\n`
+		message += `\nJust run 'oplgen' without the ${divergent.join(" ")} arguments\n`
 		console.log(message)
 		process.exit()
 	}
-} else {
-	fs.writeFileSync(`.params`, JSON.stringify({
-		sequenceLength: options.sequenceLength,
-		conserve: options.conserve,
-		linear: options.linear,
-		delimiter: options.delimiter
-	}, null, 2))
 }
+// store options for next run
+fs.writeFileSync(`.params`, JSON.stringify({options}, null, 2))
+
+
 
 const TYPE_LINEAR = 'linear'
 const TYPE_CYCLIC = 'cyclo'
