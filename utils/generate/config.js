@@ -1,6 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const enumerate = require('./enumerate')
+require('../tty')
 
 const cannotDiverge = { 'sequenceLength':1, 'linear':1, 'conserve':1, 'delimiter':1 }
 var params = false
@@ -118,10 +119,6 @@ const bar = new ProgressBar(
 	'Progress :bar :percent :current/:total sequences found ',
 	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
-
-// show warning if not running in tty console
-require('../tty-warning')("oplgen")
-
 
 // export everything
 module.exports = {

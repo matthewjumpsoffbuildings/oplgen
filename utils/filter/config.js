@@ -1,5 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
+require('../tty')
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
@@ -39,9 +40,6 @@ const obabelBar = new ProgressBar(
 	'Progress :bar :percent :current/:total smiles processed ',
 	{ total: number, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
-
-// show warning if not running in tty console
-require('../tty-warning')("oplflt")
 
 module.exports = {
 	number,
