@@ -11,7 +11,7 @@ const options = commandLineArgs([
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 	{ name: 'linear', type: Boolean, defaultValue: false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: 9 },
-	{ name: 'conserve', alias: 'c', type: String },
+	{ name: 'conserve', alias: 'c', type: String, defaultValue: "" },
 	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
 ])
 
@@ -24,12 +24,12 @@ if(fs.existsSync(`.params`)){
 	for(var param in params){
 		if(options[param] != params[param]){
 			divergent = true
-			message += `\n * ${param} - current: ${options[param]}, previous: ${params[param]} `
+			message += `\n * ${param} - current: '${options[param]}', previous: '${params[param]}' `
 		}
 	}
 	if(divergent){
 		message += `\n\nIf you want to generate this new configuration of SMILES, create a new folder for them, open a terminal there, and run`
-		message += "\n'oplgen "+process.argv.slice(2).join(" ")+"'" 
+		message += "\n'oplgen "+process.argv.slice(2).join(" ")+"'"
 		message += `\n\nIf you want to generate more SMILES in this folder using the current configuration`
 		message += `\nJust run 'oplgen' with no arguments to use the correct settings\n`
 		console.log(message)
@@ -38,7 +38,7 @@ if(fs.existsSync(`.params`)){
 } else {
 	fs.writeFileSync(`.params`, JSON.stringify({
 		sequenceLength: options.sequenceLength,
-		conserve: options.conserve ? options.conserve : false,
+		conserve: options.conserve,
 		linear: options.linear,
 		delimiter: options.delimiter
 	}, null, 2))
@@ -62,7 +62,7 @@ const dontOutput = options.outputDir == "0" || options.outputDir == "false" ? tr
 // work out conserve options from -c 1:ADDA,4:3221
 const conserved = []
 var numConserved = 0
-if(options.conserve){
+if(options.conserve.length){
 	let c = options.conserve.split(',')
 	numConserved = c.length
 	for(var i in c){
