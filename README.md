@@ -46,7 +46,7 @@ This program contains 3 command line utilities:
 - [`opl-filter`](#opl-filter)       (alias [`oplflt`](#opl-filter))
 - [`opl-subunits`](#opl-subunits)   (alias [`oplsub`](#opl-subunits))
 
-The ideal way to use these is to create separate folders for each type/length of chain you are interested in generating/filtering. For example if you want to generate cyclic chains of length 5, make a folder named `cyclo.5` or something similar, and open a cmd/terminal in that folder to run the generation/filtering. Then if you want to generate linear chains of length 4, make another folder named `linear.4` and open a cmd/terminal there to do the generation/filtering for that chain type.
+The correct procedure to use these commands is to create separate folders for each type/length of chain you are interested in generating/filtering. For example if you want to generate cyclic chains of length 5, make a folder named `cyclo.5` or something similar, and open a cmd/terminal in that folder to run the generation/filtering. Then if you want to generate linear chains of length 4 with `ADDA` conserved at position 1, make another folder named `linear.4.1:ADDA` and open a cmd/terminal there to do the generation/filtering for that chain type.
 
 ### opl-generate
 ```
