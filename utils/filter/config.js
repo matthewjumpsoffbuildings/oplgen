@@ -53,5 +53,6 @@ module.exports = {
 	subunits,
 	delimiter,
 	filterBar,
-	obabelBar
+	obabelBar,
+	statsOnly
 }

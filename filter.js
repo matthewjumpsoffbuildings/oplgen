@@ -6,7 +6,7 @@ const { spawnSync } = require('child_process')
 const startTime = Date.now()
 
 const {
-	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter, filterBar, obabelBar, number, range, subunits
+	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter, filterBar, obabelBar, number, range, subunits, statsOnly
 } = require('./utils/filter/config')
 
 const props = {
@@ -234,7 +234,7 @@ const duration = (endTime - startTime)/1000
 const used = process.memoryUsage().heapUsed / 1024 / 1024
 
 if(statsOnly)
-	console.log(`\n\nDone! Created stats for ${totalOutputs} items`)
+	console.log(`\n\nDone! Created stats for ${number} items`)
 else
 	console.log(`\n\nDone! Created output.mol2 with ${totalOutputs} items, ready for dock6`)
 
