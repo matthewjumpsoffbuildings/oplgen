@@ -5,6 +5,7 @@ const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
 	{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "smiles" },
 	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "mol2" },
+	{ name: 'stats', alias: 's', type: Boolean, defaultValue: false },
 	{ name: 'subunits', alias: 'j', type: String, defaultValue: "subunits.json" },
 	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 },
@@ -12,7 +13,7 @@ const options = commandLineArgs([
 ])
 
 const delimiter = options.delimiter
-
+const statsOnly = options.stats
 const sourceFolder = options.inputFolder
 const outputFolder = options.outputFolder
 console.log("Loading files from ", sourceFolder, "\n")

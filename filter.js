@@ -154,77 +154,88 @@ fs.appendFileSync(`stats-files.txt`, fileStats)
 
 
 // convert to mol2
-console.log(`\nSorted ${numOfFiles} smiles, converting ${number} from the top ${range} to mol2\n`)
-fs.ensureDirSync(outputFolder)
-const wip = "00.UNCONVERTED."
-
-obabelBar.update(0)
-
-for(i = 0; i < number; i++)
+// unless statsOnly was passed
+if(!statsOnly)
 {
-	filename = filtered[i].filename.replace(".smiles", "")
-	k = ""
-	// k = padString+(i+1)
-	// k = k.substr(k.length-padStringLength)
+	console.log(`\nSorted ${numOfFiles} smiles, converting ${number} from the top ${range} to mol2\n`)
+	fs.ensureDirSync(outputFolder)
+	const wip = "00.UNCONVERTED."
 
-	// check if this smiles isnt partially converted
-	if(fs.existsSync(`${outputFolder}/${wip}${k}${filename}.mol2`)){
+	obabelBar.update(0)
+
+	for(i = 0; i < number; i++)
+	{
+		filename = filtered[i].filename.replace(".smiles", "")
+		k = ""
+		// k = padString+(i+1)
+		// k = k.substr(k.length-padStringLength)
+
+		// check if this smiles isnt partially converted
+		if(fs.existsSync(`${outputFolder}/${wip}${k}${filename}.mol2`)){
+			fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
+			if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
+				fs.unlinkSync(`${outputFolder}/${k}${filename}.mol2`)
+		} // otherwise its already converted, move on
+		else if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
+			continue
+
+		// step 1 of obabel
+		spawn = spawnSync(`obabel`, [`-ismi`, `${sourceFolder}/${filename}.smiles`, `-osy2`, `-O`, `${outputFolder}/${wip}${k}${filename}.mol2`, `--gen3d`, `--partialcharge`])
+
+		// log errors here if needed
+		spawnStdErr = spawn.stderr.toString()
+		if(spawnStdErr && spawnStdErr.search(/error/i) > -1) {
+			console.log(`\n${spawnStdErr}\nFile: ${filtered[i].filename}\nThere may be an issue with one of the subunit smiles\nSkipping this file for now`)
+			// delete wip file and move on
+			fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
+			continue
+		}
+
+		// step 2 of obabel
+		spawn = spawnSync(`obabel`, [`-isy2`, `${outputFolder}/${wip}${k}${filename}.mol2`, `-osy2`, `-O`, `${outputFolder}/${k}${filename}.mol2`, `-p`, `7`, `--minimize`, `--conformer`])
+
+		// delete wip file
 		fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
-		if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
-			fs.unlinkSync(`${outputFolder}/${k}${filename}.mol2`)
-	} // otherwise its already converted, move on
-	else if(fs.existsSync(`${outputFolder}/${k}${filename}.mol2`))
-		continue
 
-	// step 1 of obabel
-	spawn = spawnSync(`obabel`, [`-ismi`, `${sourceFolder}/${filename}.smiles`, `-osy2`, `-O`, `${outputFolder}/${wip}${k}${filename}.mol2`, `--gen3d`, `--partialcharge`])
-
-	// log errors here if needed
-	spawnStdErr = spawn.stderr.toString()
-	if(spawnStdErr && spawnStdErr.search(/error/i) > -1) {
-		console.log(`\n${spawnStdErr}\nFile: ${filtered[i].filename}\nThere may be an issue with one of the subunit smiles\nSkipping this file for now`)
-		// delete wip file and move on
-		fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
-		continue
+		obabelBar.update((i+1)/number)
 	}
 
-	// step 2 of obabel
-	spawn = spawnSync(`obabel`, [`-isy2`, `${outputFolder}/${wip}${k}${filename}.mol2`, `-osy2`, `-O`, `${outputFolder}/${k}${filename}.mol2`, `-p`, `7`, `--minimize`, `--conformer`])
+	// combine all mol2 files into one big output mol2
+	const outputFilenames = fs.readdirSync(outputFolder)
+	if(fs.existsSync(`output.mol2`)) fs.unlinkSync(`output.mol2`)
+	var totalOutputs = 0
+	for(i = 0; i < outputFilenames.length; i++)
+	{
+		filename = outputFilenames[i]
+		if(!fs.existsSync(`${outputFolder}/${filename}`)) continue
 
-	// delete wip file
-	fs.unlinkSync(`${outputFolder}/${wip}${k}${filename}.mol2`)
-
-	obabelBar.update((i+1)/number)
-}
-
-// combine all mol2 files into one big output mol2
-const outputFilenames = fs.readdirSync(outputFolder)
-if(fs.existsSync(`output.mol2`)) fs.unlinkSync(`output.mol2`)
-var totalOutputs = 0
-for(i = 0; i < outputFilenames.length; i++)
-{
-	filename = outputFilenames[i]
-	if(!fs.existsSync(`${outputFolder}/${filename}`)) continue
-
-	if(filename.indexOf(wip) === 0){
-		fs.unlinkSync(`${outputFolder}/${filename}`)
-		filename = filename.replace(wip, "")
-		if(fs.existsSync(`${outputFolder}/${filename}`))
+		if(filename.indexOf(wip) === 0){
 			fs.unlinkSync(`${outputFolder}/${filename}`)
-		continue
+			filename = filename.replace(wip, "")
+			if(fs.existsSync(`${outputFolder}/${filename}`))
+				fs.unlinkSync(`${outputFolder}/${filename}`)
+			continue
+		}
+
+		k = fs.readFileSync(`${outputFolder}/${filename}`)
+		fs.appendFileSync(`output.mol2`, k)
+		totalOutputs++
 	}
 
-	k = fs.readFileSync(`${outputFolder}/${filename}`)
-	fs.appendFileSync(`output.mol2`, k)
-	totalOutputs++
-}
+	// finish off progress bar for mol2 conversion
+	if(obabelBar.curr != number) obabelBar.update(1)
+} // (end of !statsOnly) block
 
-// finish off progress bar
-if(obabelBar.curr != number) obabelBar.update(1)
+
 
 // done
 const endTime = Date.now()
 const duration = (endTime - startTime)/1000
 const used = process.memoryUsage().heapUsed / 1024 / 1024
-console.log(`\n\nDone! Created output.mol2 with ${totalOutputs} items, ready for dock6`)
+
+if(statsOnly)
+	console.log(`\n\nDone! Created stats for ${totalOutputs} items`)
+else
+	console.log(`\n\nDone! Created output.mol2 with ${totalOutputs} items, ready for dock6`)
+
 console.log(`\nThe script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
