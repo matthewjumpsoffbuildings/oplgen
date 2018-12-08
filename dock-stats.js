@@ -33,7 +33,8 @@ while (matches = regex.exec(dockedString)) {
 }
 
 const stats = require('stats-lite')
-var outputStats = "PROPERTY,MIN,MAX,MEAN,MEDIAN,STANDARD DEVIATION,SAMPLE STANDARD DEVIATION"
+var outputStats = dockedPath+"\n\n"
+outputStats += "PROPERTY,MIN,MAX,MEAN,MEDIAN,STANDARD DEVIATION,SAMPLE STANDARD DEVIATION"
 
 for(prop in props){
 	outputStats += "\n" + prop
