@@ -55,7 +55,7 @@ The correct procedure to use these commands is to create separate folders for ea
 
 Generate a specified number of oligopeptides in SMILES format from a collection of subunits stored in JSON format. Duplicates will not be created. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
 
-Once you have run `oplgen` once in a working directory with some arguments, they will be stored in a `.params` file so if you want to generate more using the same arguments you can just run `oplgen` without having to respecify the settings. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate in batches. You can still specify a different value for `-n`/`--number` if you want to generate more/less each time, but you shouldnt change any of the other options in the current working directory. If you accidentally generated the wrong type of chain the first time you ran `oplgen` in a new folder, just delete the `smiles` folder and `.params` file and start again.
+Once you have run `oplgen` once in a working directory with some arguments, they will be stored in a `.params` file so if you want to generate more using the same arguments you can just run `oplgen` without having to respecify the settings. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate in batches. You can still specify a different value for `-n`/`--number` if you want to generate more/less each time, but you shouldnt change any of the other options in the current working directory. If you accidentally generated the wrong type of chain the first time you ran `oplgen` in a new folder, just delete the `smiles` folder and `.params` file and start again. Note if you have lots of smiles files in the `smiles` folder it may be slow to try and delete it via your file explorer, instead delete it from the cmd/terminal using `rm -rf smiles` for OSX/Linux and `rd /s /q "smiles"` for Windows
 
 Once you have generated the desired number of SMILES, use [`opl-filter`](#opl-filter) to select a subset of them based on drug-likeness, output stats about them, and convert them to mol2 using openbabel
 
@@ -102,7 +102,7 @@ opl-generate -l 7 --linear
 Generate SMILES for 20,000 cyclic oligopeptides of length 6 with the ADDA subunit conserved at position 1 and D-ALA at position 4:
 
 ```
-opl-generate -n 20000 -c 1:ADDA,4:D-ALA
+opl-generate -l 6 -n 20000 -c 1:ADDA,4:D-ALA
 ```
 
 ## opl-filter
