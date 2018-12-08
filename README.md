@@ -170,7 +170,7 @@ Create a `dock-stats.txt` file containing statistics for min, max, median, mean 
 **Important**: If you put your docked mol2 file in the working directory, dont name it `output.mol2` or the energy scores from dock6 will be overwritten if you run `opl-filter` again in this directory
 
 ```
-opel-dockstats
+opl-dockstats
 
 opldst docked_file.mol2
 ```
