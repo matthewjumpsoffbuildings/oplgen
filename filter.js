@@ -113,6 +113,8 @@ filtered.sort(function(a, b){
 })
 
 // generate stats
+console.log(`\nSorted ${numOfFiles} smiles, generating stats`)
+
 const stats = require('stats-lite')
 const vals = {}, max = {}, min = {}
 const filterInfo = `${number} selected from top scoring ${range} of ${numOfFiles} total  -  oplflt ${process.argv.slice(2).join(" ")}`
@@ -159,7 +161,7 @@ fs.appendFileSync(`stats-files.txt`, fileStats)
 // unless statsOnly was passed
 if(!statsOnly)
 {
-	console.log(`\nSorted ${numOfFiles} smiles, converting ${number} from the top ${range} to mol2\n`)
+	console.log(`\nConverting ${number} from the top ${range} to mol2\n`)
 	fs.ensureDirSync(outputFolder)
 	const wip = "00.UNCONVERTED."
 
