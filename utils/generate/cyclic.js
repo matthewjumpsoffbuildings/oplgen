@@ -23,48 +23,27 @@ module.exports = function(){
 
 		sequenceIndexString = indexes.join(",")
 		sequenceIndexArray = sequenceIndexString.split(",")
+		sequenceHashArray = [sequenceIndexString]
 
-		if(!sequencesHash.hasOwnProperty(sequenceIndexString)){
+		// generate all cyclic variations
+		for(i = 0; i <sequenceLength; i++){
+			sequenceIndexArray.unshift(sequenceIndexArray.pop())
+			sequenceHashArray.push(sequenceIndexArray.join(","))
+		}
 
-			// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
-			sequencesHash[sequenceIndexString] = true
-			sequenceHashArray = [sequenceIndexString]
+		// sort sequenceHashArray then use the first item as the indexArray/string
+		sequenceHashArray.sort()
+		sequenceIndexString = sequenceHashArray[0]
+		sequenceIndexArray = sequenceIndexString.split(",")
 
-			// generate all cyclic variations so they arent repeated either
-			for(i = 0; i <sequenceLength; i++){
-				sequenceIndexArray.unshift(sequenceIndexArray.pop())
-				sequenceIndexString = sequenceIndexArray.join(",")
-				sequencesHash[sequenceIndexString] = true
-				sequenceHashArray.push(sequenceIndexString)
-			}
+		sequenceString = ""
+		filename = sequenceType+"."+sequenceLength+"."
 
-			// sort sequenceHashArray then use the first item as the indexArray/string
-			sequenceHashArray.sort()
-			sequenceIndexString = sequenceHashArray[0]
-			sequenceIndexArray = sequenceIndexString.split(",")
-
-			sequenceString = ""
-			filename = sequenceType+"."+sequenceLength+"."
-
-			// generate output string and filename
-			for (i = 0; i < sequenceLength; i++){
-				sequenceString += subunits[sequenceIndexArray[i]].smiles
-				filename += subunitNames[sequenceIndexArray[i]]
-				if(i<sequenceLength-1) filename += delimiter
-			}
-
-			// add terminators
-			sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
-			sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
-
-			// add metadata
-			sequenceString += ' '+filename
-
-			/// write to SMILES file
-			if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
-
-			// increment sequences count
-			sequences++
+		// generate output string and filename
+		for (i = 0; i < sequenceLength; i++){
+			sequenceString += subunits[sequenceIndexArray[i]].smiles
+			filename += subunitNames[sequenceIndexArray[i]]
+			if(i<sequenceLength-1) filename += delimiter
 		}
 
 		// make next sequence
@@ -79,5 +58,24 @@ module.exports = function(){
 				break
 			}
 		}
+
+		// output stage for current sequence
+
+		// check if file already exists
+		// if(fs.existsSync(`${outputDirectory}/${filename}.smiles`))
+		// 	continue
+
+		// add terminators
+		sequenceString = sequenceString.replace(/^(.)/i, '$&'+ringClosureDigit) // add closure digit after first character
+		sequenceString = sequenceString.replace(/\(=O\)$/i, ringClosureDigit+'(=O)') // add closure digit after last (=O)
+
+		// add metadata
+		sequenceString += ' '+filename
+
+		/// write to SMILES file
+		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
+
+		// increment sequences count
+		sequences++
 	}
 }

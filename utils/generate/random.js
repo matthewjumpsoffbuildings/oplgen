@@ -33,22 +33,15 @@ module.exports = function()
 			sequenceIndexArray.push(subunitIndex)
 		}
 
-		// check this new sequence hasnt been made already
+		// get string of sequence
 		sequenceIndexString = sequenceIndexArray.join(",")
-		if(sequencesHash.hasOwnProperty(sequenceIndexString))
-			continue
-
-		// this sequence is new, store all variations in the sequencesHash so it doesnt get repeated
-		sequencesHash[sequenceIndexString] = true
 		sequenceHashArray.push(sequenceIndexString)
 
 		// if we are in cyclic mode, generate all cyclic variations so they arent repeated either
 		if(sequenceType == TYPE_CYCLIC){
 			for(i = 0; i <sequenceLength; i++){
 				sequenceIndexArray.unshift(sequenceIndexArray.pop())
-				sequenceIndexString = sequenceIndexArray.join(",")
-				sequencesHash[sequenceIndexString] = true
-				sequenceHashArray.push(sequenceIndexString)
+				sequenceHashArray.push(sequenceIndexArray.join(","))
 			}
 
 			// sort sequenceHashArray then use the first item as the indexArray/string
@@ -63,6 +56,10 @@ module.exports = function()
 			filename += subunitNames[sequenceIndexArray[i]]
 			if(i<sequenceLength-1) filename += delimiter
 		}
+
+		// check if file already exists
+		if(fs.existsSync(`${outputDirectory}/${filename}.smiles`))
+			continue
 
 		// add terminators etc
 		if(sequenceType == TYPE_CYCLIC){
