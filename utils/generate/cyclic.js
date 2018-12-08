@@ -17,7 +17,7 @@ if(sequenceType == TYPE_CYCLIC && method == METHOD_SEQUENTIAL){
 module.exports = function(){
 	for(k = 0; k < iterationBlock; k++){
 		// if we already have enough sequences dont bother
-		if(sequences >= numOfSequences || iterations >= linearMaximum) return
+		if(sequences >= numOfSequences || iterations > linearMaximum) return
 
 		iterations++
 

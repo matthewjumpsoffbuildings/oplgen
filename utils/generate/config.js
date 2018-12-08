@@ -15,7 +15,7 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: params ? params.linear : false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: params ? params.ringClosureDigit : 9 },
 	{ name: 'conserve', alias: 'c', type: String, defaultValue: params ? params.conserve : "" },
-	// { name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
+	{ name: 'testRun', alias: 't', type: Boolean, defaultValue:  params ? params.testRun : false }
 ])
 
 var param, message = "", divergent = false
@@ -51,7 +51,7 @@ const sequenceLength = options.sequenceLength
 const subunitsFile = options.subunits
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
-const dontOutput = options.outputDir == "0" || options.outputDir == "false" ? true : false
+const dontOutput = options.testRun
 const methodRequested = METHOD_RANDOM //options.sequential ? METHOD_SEQUENTIAL : METHOD_RANDOM
 
 // work out conserve options from -c 1:ADDA,4:3221
@@ -114,7 +114,7 @@ if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory
 // create a new progress bar instance
 const ProgressBar = require('progress')
 const bar = new ProgressBar(
-	'Progress :bar :percent :current/:total sequences found ',
+	'Progress: :bar :percent :current/:total ',
 	{ total: numOfSequences, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 

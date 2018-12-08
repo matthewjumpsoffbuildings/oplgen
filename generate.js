@@ -9,8 +9,9 @@ global.iterationBlock = 2000
 global.iterations = 0
 global.lastUniqueTime = Date.now()
 
-const RUN_FOREVER = false
-const TIMEOUT = 60 * 1000 // time out if no new sequences found in 1 minute
+// time out if no new sequences found in 1 minute
+const TIMEOUT = 60 * 1000
+var noNewFoundTime = 0
 
 // Setup config vars from arguments
 const { numOfSequences, linearMaximum, bar, method, maximum,
@@ -34,13 +35,11 @@ let iterationInterval = setInterval(function(){
 
 	if(iterations % 1000 == 0) bar.update(sequences/numOfSequences)
 
-	let noNewFoundTime = Date.now() - lastUniqueTime
+	noNewFoundTime = Date.now() - lastUniqueTime
 
-	if( (RUN_FOREVER && noNewFoundTime < TIMEOUT) ||
-		(
-			noNewFoundTime < TIMEOUT && sequences < numOfSequences
-			&& (method == METHOD_RANDOM || iterations < linearMaximum)
-		)
+	if( sequences < numOfSequences &&
+		((method == METHOD_RANDOM && noNewFoundTime < TIMEOUT) ||
+		iterations < linearMaximum)
 	)
 		generate()
 	else {
