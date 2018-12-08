@@ -115,9 +115,11 @@ filtered.sort(function(a, b){
 // generate stats
 const stats = require('stats-lite')
 const vals = {}, max = {}, min = {}
-var fileStats = "oplflt "+process.argv.slice(2).join(" ")
+const filterInfo = `${number} selected from top scoring ${range} of ${numOfFiles} total  -  oplflt ${process.argv.slice(2).join(" ")}`
+var fileStats = filterInfo
 fileStats += "\n\nRANK,FILENAME"
 
+props.score = 0
 for(prop in props){
 	vals[prop] = []
 	fileStats += "," + prop
@@ -133,7 +135,7 @@ for(i = 0; i<number; i++){
 	}
 }
 
-var outputStats = "oplflt "+process.argv.slice(2).join(" ")
+var outputStats = filterInfo
 outputStats += "\n\nPROPERTY,MIN,MAX,MEAN,MEDIAN,STANDARD DEVIATION,SAMPLE STANDARD DEVIATION"
 
 for(prop in props){
