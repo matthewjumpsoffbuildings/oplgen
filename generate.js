@@ -47,7 +47,7 @@ let iterationInterval = setInterval(function(){
 
 		if(bar.curr != bar.total) bar.update(1)
 
-		if(noNewFoundTime >= TIMEOUT) console.log(`\nDidnt find any unique sequences for ${TIMEOUT/1000} seconds, terminating`)
+		if(method == METHOD_RANDOM && noNewFoundTime >= TIMEOUT) console.log(`\nDidnt find any unique sequences for ${TIMEOUT/1000} seconds, terminating`)
 
 		console.log(`\nComplete! Generated ${sequences} unique sequences in ${iterations} iterations\n`)
 
