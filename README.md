@@ -1,6 +1,6 @@
 # OPLGen - Oligopeptide Ligand Generator
 
-Simple command line tools to generate cyclic and linear oligopeptides in SMILES format, filter them based on drug-likeness, and perform ligand file preparation using Open Babel to output ready-to-dock mol2 files. Supports Windows, OSX and Linux
+Simple command line tools to generate cyclic and linear oligopeptides in SMILES format, filter them based on drug-likeness, output stats and perform ligand file preparation using Open Babel to output ready-to-dock mol2 files. Supports Windows, OSX and Linux
 
 Developed by:  
 [@matthewjumpsoffbuildings](https://github.com/matthewjumpsoffbuildings)  
