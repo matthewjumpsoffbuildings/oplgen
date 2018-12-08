@@ -55,22 +55,20 @@ opl-generate -l 6 -n 25000
 oplgen -l 4 -n 3000 --linear
 ```
 
-Generate a specified number of oligopeptides in SMILES format from a collection of subunits stored in JSON format. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
+Generate a specified number of oligopeptides in SMILES format from a collection of subunits stored in JSON format. Duplicates will not be created. For an example of how the subunits JSON is structured see the default JSON [here](./subunits.json)
 
-This command can be run multiple times in the same working directory as long as you only generate one type of oligopeptide (cyclic or linear) and use the same value for the `-l`/`--sequenceLength` and `-c`/`--conserve` each time you run it. Duplicates will not be created. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate the SMILES in batches.
-
-Once you have run `oplgen` once in a working directory with some arguments, they will be stored in a `.params` file so if you want to generate more using the same arguments you can just run `oplgen` without having to respecify the settings. You can also specify `-n`/`--number` and other options if you want to generate more/less each time, as long as you dont change the _type_ of chain being generated in the current folder. If you accidentally generated the wrong type of chain the first time you ran `oplgen` in a new folder, just delete the `smiles` folder and `.params` file and start again.
+Once you have run `oplgen` once in a working directory with some arguments, they will be stored in a `.params` file so if you want to generate more using the same arguments you can just run `oplgen` without having to respecify the settings. This is useful since the number of possible oligopeptides is huge for anything but very small lengths, so you may want to generate in batches. You can still specify a different value for `-n`/`--number` if you want to generate more/less each time, but you shouldnt change any of the other options in the current working directory. If you accidentally generated the wrong type of chain the first time you ran `oplgen` in a new folder, just delete the `smiles` folder and `.params` file and start again.
 
 Once you have generated the desired number of SMILES, use [`opl-filter`](#opl-filter) to select a subset of them based on drug-likeness, output stats about them, and convert them to mol2 using openbabel
 
 The following options are available:
 
-- `-l --sequenceLength` - default: `5`
-	- How long should each generated chain of subunits be?
 - `-n --number` - default: `100000`
 	- How many SMILES to generate? Given even relatively short chain lengths, the number of possible unique chains is often beyond a home computers capability to generate, so this defaults to `100000`
 	- If you pass a number greater than the possible number of unique chains for the given length/subunits, it will generate all possible unique chains
 	- If you pass a number less than 1, it will generate all possible unique chains for the given length/subunits
+- `-l --sequenceLength` - default: `5`
+	- How long should each generated chain of subunits be?
 - `-s --subunits` - default: [`subunits.json`](./subunits.json)
 	- Where should the generator look for the subunits JSON data?
 	- By default, the program has a subunits JSON file with 32 common subunits in its install directory
