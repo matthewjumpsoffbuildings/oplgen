@@ -87,7 +87,7 @@ The following options are available:
 
 #### Some Examples
 
-Generate SMILES for 100,000 cyclic oligopeptides of length 5 (default):
+Generate SMILES for 100,000 cyclic oligopeptides of length 5 if in a fresh directory, or generate more oligopeptides using previous settings in a directory that has had `opl-generate` run in it before:
 
 ```
 opl-generate
