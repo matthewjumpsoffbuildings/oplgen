@@ -9,8 +9,8 @@ const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
 	{ name: 'stats', alias: 's', type: Boolean, defaultValue: false },
 	{ name: 'subunits', alias: 'j', type: String, defaultValue: params ? params.subunits : "subunits.json" },
-	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 },
-	{ name: 'range', alias: 'r', type: Number, defaultValue: 0 }
+	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 }, // 0 = all
+	{ name: 'range', alias: 'r', type: Number, defaultValue: -1 } // -1 = same as number, 0 = all
 ])
 
 const delimiter = "__"
@@ -22,8 +22,8 @@ console.log("\nLoading smiles files for sorting")
 const sourceFilenames = fs.readdirSync(sourceFolder)
 const numOfFiles = sourceFilenames.length
 
-const number = Math.min(options.number, sourceFilenames.length)
-const range = options.range ? Math.max(options.range, options.number) : options.number
+const number = options.number > 0 ? Math.min(options.number, sourceFilenames.length) : sourceFilenames.length
+const range = options.range > 0 ? Math.max(options.range, number) : (options.range == 0 ? numOfFiles : number)
 
 const defaultJSONPath = require('../subunits-path')
 const jsonPath = fs.existsSync(options.subunits) ? options.subunits : defaultJSONPath
