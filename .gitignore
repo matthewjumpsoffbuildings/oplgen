@@ -1,5 +1,6 @@
 .DS_Store
 smiles
+smiles.db
 mol2
 output.mol2
 docked.mol2
