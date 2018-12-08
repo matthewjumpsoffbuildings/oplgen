@@ -12,7 +12,7 @@
     "opl-subunits": "./get-subunits.js",
     "oplsub": "./get-subunits.js",
     "opl-dockstats": "./dock-stats.js",
-    "opldst": "./dock-stats.js",
+    "opldst": "./dock-stats.js"
   },
   "author": "matthewjumpsoffbuildings",
   "license": "ISC",
