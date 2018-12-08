@@ -2,6 +2,8 @@
 smiles
 mol2
 output.mol2
+docked.mol2
 TODO
 stats-*.txt
+dock-stats.txt
 .params

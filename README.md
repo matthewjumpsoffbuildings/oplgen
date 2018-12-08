@@ -48,6 +48,7 @@ This program contains 3 command line utilities:
 - [`opl-generate`](#opl-generate)   (alias [`oplgen`](#opl-generate)) - Generate oligopeptide SMILES files
 - [`opl-filter`](#opl-filter)       (alias [`oplflt`](#opl-filter)) - Sort, filter, output stats and mol2
 - [`opl-subunits`](#opl-subunits)   (alias [`oplsub`](#opl-subunits)) - Insert the default [`subunits.json`](./subunits.json) into the working directory
+- [`opl-dockstats`](#opl-dockstats) - Get stats from a mol2 file docked with dock6
 
 The correct procedure to use these commands is to create separate folders for each type/length of chain you are interested in generating/filtering, and then run `opl-generate` and then `opl-filter` in each folder with different settings. For example if you want to generate cyclic chains of length 5, make a folder named `cyclo.5` or something similar, and open a cmd/terminal in that folder to run the generation/filtering. Then if you want to generate linear chains of length 4 with `ADDA` conserved at position 1, make another folder named `linear.4.1:ADDA` or similar and open a cmd/terminal there to do the generation/filtering for that chain type.
 
@@ -161,3 +162,9 @@ opl-subunits
 
 oplsub
 ```
+
+## opl-dockstats
+
+Create a `dock-stats.txt` file containing statistics for min, max, median, mean and standard deviation from the energy scores contained in a mol2 file that has been successfully docked with dock6. By default it looks for a `docked.mol2` file in the working directory, or you can pass the filename eg `opl-dockstats my_docked_file.mol2`
+
+**Important**: If you put your docked mol2 file in the working directory, dont name it `output.mol2` or the energy scores from dock6 will be overwritten if you run `opl-filter` again in this directory

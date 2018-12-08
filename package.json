@@ -1,6 +1,6 @@
 {
   "name": "oplgen",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "description": "OPLGen - Oligopeptide Ligand Generator. Generate oligopeptides in SMILES format with filtering and ligand preparation for molecular docking",
   "repository": "git@github.com:matthewjumpsoffbuildings/oplgen.git",
   "main": "index.js",
@@ -10,7 +10,8 @@
     "opl-filter": "./filter.js",
     "oplflt": "./filter.js",
     "opl-subunits": "./get-subunits.js",
-    "oplsub": "./get-subunits.js"
+    "oplsub": "./get-subunits.js",
+    "opl-dockstats": "./dock-stats.js",
   },
   "author": "matthewjumpsoffbuildings",
   "license": "ISC",
