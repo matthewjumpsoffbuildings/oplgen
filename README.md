@@ -168,3 +168,9 @@ oplsub
 Create a `dock-stats.txt` file containing statistics for min, max, median, mean and standard deviation from the energy scores contained in a mol2 file that has been successfully docked with dock6. By default it looks for a `docked.mol2` file in the working directory, or you can pass the filename eg `opl-dockstats my_docked_file.mol2`
 
 **Important**: If you put your docked mol2 file in the working directory, dont name it `output.mol2` or the energy scores from dock6 will be overwritten if you run `opl-filter` again in this directory
+
+```
+opel-dockstats
+
+opldst docked_file.mol2
+```
