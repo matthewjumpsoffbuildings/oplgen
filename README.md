@@ -43,7 +43,7 @@ npm install -g oplgen@latest
 
 ## Usage
 
-This program contains 3 command line utilities:
+This program contains the following command line utilities:
 
 - [`opl-generate`](#opl-generate)   (alias [`oplgen`](#opl-generate)) - Generate oligopeptide SMILES files
 - [`opl-filter`](#opl-filter)       (alias [`oplflt`](#opl-filter)) - Sort, filter, output stats and mol2
