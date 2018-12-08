@@ -2,22 +2,23 @@ const fs = require('fs-extra')
 const path = require('path')
 require('../tty')
 
+var params = false
+if(fs.existsSync(`.params`)) params = JSON.parse( fs.readFileSync(`.params`) )
+
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
-	{ name: 'inputFolder', alias: 'i', type: String, defaultValue: "smiles" },
-	{ name: 'outputFolder', alias: 'o', type: String, defaultValue: "mol2" },
 	{ name: 'stats', alias: 's', type: Boolean, defaultValue: false },
-	{ name: 'subunits', alias: 'j', type: String, defaultValue: "subunits.json" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: "__" },
+	{ name: 'subunits', alias: 'j', type: String, defaultValue: params ? params.subunits : "subunits.json" },
 	{ name: 'number', alias: 'n', type: Number, defaultValue: 100 },
 	{ name: 'range', alias: 'r', type: Number, defaultValue: 0 }
 ])
 
-const delimiter = options.delimiter
+const delimiter = "__"
+const sourceFolder = "smiles"
+const outputFolder = "mol2"
 const statsOnly = options.stats
-const sourceFolder = options.inputFolder
-const outputFolder = options.outputFolder
-console.log("Loading files from ", sourceFolder, "\n")
+
+console.log("\nLoading smiles files for sorting")
 const sourceFilenames = fs.readdirSync(sourceFolder)
 const numOfFiles = sourceFilenames.length
 

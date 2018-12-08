@@ -3,7 +3,7 @@ const path = require('path')
 const enumerate = require('./enumerate')
 require('../tty')
 
-const cannotDiverge = { 'sequenceLength':1, 'linear':1, 'conserve':1, 'delimiter':1 }
+const cannotDiverge = { 'sequenceLength':1, 'linear':1, 'conserve':1 }
 var params = false
 if(fs.existsSync(`.params`)) params = JSON.parse( fs.readFileSync(`.params`) )
 
@@ -11,9 +11,7 @@ const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
 	{ name: 'number', alias: 'n', type: Number, defaultValue: params ? params.number : 100000 },
 	{ name: 'sequenceLength', alias: 'l', type: Number, defaultValue: params ? params.sequenceLength : 5 },
-	{ name: 'outputDir', alias: 'o', type: String, defaultValue: params ? params.outputDir : "smiles" },
 	{ name: 'subunits', alias: 's', type: String, defaultValue: params ? params.subunits : "subunits.json" },
-	{ name: 'delimiter', alias: 'd', type: String, defaultValue: params ? params.delimiter : "__" },
 	{ name: 'linear', type: Boolean, defaultValue: params ? params.linear : false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: params ? params.ringClosureDigit : 9 },
 	{ name: 'conserve', alias: 'c', type: String, defaultValue: params ? params.conserve : "" },
@@ -46,15 +44,15 @@ const TYPE_CYCLIC = 'cyclo'
 const METHOD_SEQUENTIAL = 'sequential'
 const METHOD_RANDOM = 'random'
 
+const delimiter = "__"
+const outputDirectory = "smiles"
 const numRequested = options.number
 const sequenceLength = options.sequenceLength
-const outputDirectory = options.outputDir
 const subunitsFile = options.subunits
-const delimiter = options.delimiter
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
-const methodRequested = METHOD_RANDOM //options.sequential ? METHOD_SEQUENTIAL : METHOD_RANDOM
 const dontOutput = options.outputDir == "0" || options.outputDir == "false" ? true : false
+const methodRequested = METHOD_RANDOM //options.sequential ? METHOD_SEQUENTIAL : METHOD_RANDOM
 
 // work out conserve options from -c 1:ADDA,4:3221
 const conserved = []
