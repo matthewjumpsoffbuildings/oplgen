@@ -89,8 +89,8 @@ if(subunitsLength < 1){
 
 // what is the most sequences we can generate
 const linearMaximum = subunitsLength ** (sequenceLength - numConserved)
-const cyclicMaximum = enumerate(sequenceLength, subunits.length, numConserved)
-const maximum = sequenceType == TYPE_CYCLIC ? Math.min(cyclicMaximum, linearMaximum) : linearMaximum
+const cyclicMaximum = Math.min( enumerate(sequenceLength, subunits.length, numConserved), linearMaximum )
+const maximum = sequenceType == TYPE_CYCLIC ? cyclicMaximum : linearMaximum
 
 // if we have requested more sequences than is possible to generate or 0, just use maximum
 const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequested)
