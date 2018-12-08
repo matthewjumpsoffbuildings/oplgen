@@ -17,7 +17,7 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: params ? params.linear : false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: params ? params.ringClosureDigit : 9 },
 	{ name: 'conserve', alias: 'c', type: String, defaultValue: params ? params.conserve : "" },
-	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: params ? params.sequential : false}
+	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
 ])
 
 var param, message = "", divergent = false
