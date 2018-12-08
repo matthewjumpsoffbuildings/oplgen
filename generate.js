@@ -4,7 +4,7 @@ const startTime = Date.now()
 
 // Globals
 global.sequences = 0
-global.iterationBlock = 2000
+global.iterationBlock = 1000
 global.iterations = 0
 global.lastUniqueTime = Date.now()
 
@@ -29,6 +29,24 @@ const generate = method == METHOD_SEQUENTIAL ?
 
 bar.update(0)
 
+
+global.db = require('better-sqlite3')('smiles.db')
+db.prepare(
+	`CREATE TABLE IF NOT EXISTS smiles(
+		name TEXT UNIQUE,
+		smiles text,
+		score double,
+		miLogP double,
+		TPSA double,
+		natoms double,
+		MW double,
+		nON double,
+		nOHNH double,
+		nrotb double,
+		volume double
+	)`).run()
+
+
 // Start the main loop
 let iterationInterval = setInterval(function(){
 
@@ -42,6 +60,8 @@ let iterationInterval = setInterval(function(){
 	)
 		generate()
 	else {
+
+		db.close()
 
 		clearInterval(iterationInterval)
 

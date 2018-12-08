@@ -1,17 +1,32 @@
-const fs = require('fs-extra')
 const getConserved = require('./getConserved')
 const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, subunits, subunitNames,
 	outputDirectory, subunitsLength, TYPE_CYCLIC, ringClosureDigit} = require('./config')
 
+const props = {
+	name: "",
+	smiles: "",
+	miLogP: 0,
+	TPSA: 0,
+	natoms: 0,
+	MW: 0,
+	nON: 0,
+	nOHNH: 0,
+	nrotb: 0,
+	volume: 0
+}
+
 var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
-	filename, subunitIndex
+	filename, subunitIndex, data
 
 module.exports = function()
 {
+	// store sql values for sqlite batch output here
+	var output = []
+
 	for(k = 0; k < iterationBlock; k++){
 
 		// if we already have enough sequences dont bother
-		if(sequences >= numOfSequences) return
+		if(sequences >= numOfSequences) break
 
 		iterations++
 
@@ -21,15 +36,10 @@ module.exports = function()
 		sequenceString = ""
 		filename = sequenceType+"."+sequenceLength+"."
 
-		// generate a new random sequence
+		// generate a new random sequence, maintaining conserved positions
 		for(i = 0; i<sequenceLength; i++){
-
 			subunitIndex = getConserved(i)
-
-			// if it hasnt been conserved just do it randomly
 			if(subunitIndex < 0) subunitIndex = Math.floor(Math.random()*subunitsLength)
-
-			// add this subunit to the index array
 			sequenceIndexArray.push(subunitIndex)
 		}
 
@@ -50,15 +60,19 @@ module.exports = function()
 			sequenceIndexArray = sequenceIndexString.split(",")
 		}
 
-		// generate output string and filename
+		// generate output string and filename and prop totals
+		data = Object.assign({}, props)
 		for(i = 0; i<sequenceLength; i++){
 			sequenceString += subunits[sequenceIndexArray[i]].smiles
 			filename += subunitNames[sequenceIndexArray[i]]
 			if(i<sequenceLength-1) filename += delimiter
+			for(prop in props){
+				data[prop] += subunits[sequenceIndexArray[i]][prop]
+			}
 		}
 
-		// check if file already exists
-		if(fs.existsSync(`${outputDirectory}/${filename}.smiles`))
+		// check if entry already exists
+		if(db.prepare(`SELECT name FROM smiles WHERE name = ?`).get(filename))
 			continue
 
 		// add terminators etc
@@ -68,14 +82,21 @@ module.exports = function()
 		} else
 			sequenceString += "O"
 
-		// add metadata
+		// add and smiles and metadata
 		sequenceString += ' '+filename
+		data.smiles = '"'+sequenceString+'"'
+		data.name = '"'+filename+'"'
 
+		// keep track of unique sequences and time since last unique
 		sequences++
-
 		lastUniqueTime = Date.now()
 
-		// write to SMILES file
-		if(!dontOutput) fs.writeFileSync(`${outputDirectory}/${filename}.smiles`, sequenceString)
+		// add data to output values
+		output.push( "(" + Object.values(data).join(", ") + ")")
 	}
+
+	// output this batch to sqlite, if we have any results
+	if(!output.length) return
+	db.prepare(`INSERT INTO smiles (${Object.keys(props).join(", ")}) VALUES ${output}`).run()
+	output = null
 }
