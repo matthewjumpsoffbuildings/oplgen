@@ -85,7 +85,7 @@ The following options are available:
 	- Unlikely to require editing.
 	- The digit used to close cyclic chains in the generated SMILES files
 
-#### Some Examples
+#### Examples
 
 Generate SMILES for 100,000 cyclic oligopeptides of length 5 if in a fresh directory, or generate more oligopeptides using previous settings in a directory that has had `opl-generate` run in it before:
 
@@ -126,7 +126,7 @@ The following options are available:
 	- By default `oplflt` will sort, generate stats, and convert to mol2.
 	- If you just want to do a sort and generate stats, but dont want to convert to mol2, pass `-s` or `--stats`
 
-#### Some Examples:
+#### Examples
 
 Generate stats and mol2 files for the exact top scoring 100 SMILES files (default):
 
