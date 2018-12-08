@@ -94,11 +94,11 @@ The following options are available:
 - `-r --ringClosureDigit` - default: `9`
 	- Unlikely to require editing.
 	- The digit used to close cyclic chains in the generated SMILES files
-- `-q --sequential`
+<!-- - `-q --sequential`
 	- Unlikely to require editing
 	- By default, chains are generated randomly.
 	- This argument instead generates chains in sequential order, changing one piece of the chain at a time. This is faster than random generation, but not useful if you want a sampling of a wide range of the possible chains
-	- If the chain length and subunits specified is unable to generate the requested number of chains, or if you request all possible chains, sequential generation is automatically activated
+	- If the chain length and subunits specified is unable to generate the requested number of chains, or if you request all possible chains, sequential generation is automatically activated -->
 
 
 ### opl-filter

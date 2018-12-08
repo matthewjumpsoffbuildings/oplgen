@@ -17,7 +17,7 @@ const options = commandLineArgs([
 	{ name: 'linear', type: Boolean, defaultValue: params ? params.linear : false },
 	{ name: 'ringClosureDigit', alias: 'r', type: Number, defaultValue: params ? params.ringClosureDigit : 9 },
 	{ name: 'conserve', alias: 'c', type: String, defaultValue: params ? params.conserve : "" },
-	{ name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
+	// { name: 'sequential', alias: 'q', type: Boolean, defaultValue: false}
 ])
 
 var param, message = "", divergent = false
@@ -53,7 +53,7 @@ const subunitsFile = options.subunits
 const delimiter = options.delimiter
 const ringClosureDigit = options.ringClosureDigit
 const sequenceType = options.linear ? TYPE_LINEAR : TYPE_CYCLIC
-const methodRequested = options.sequential ? METHOD_SEQUENTIAL : METHOD_RANDOM
+const methodRequested = METHOD_RANDOM //options.sequential ? METHOD_SEQUENTIAL : METHOD_RANDOM
 const dontOutput = options.outputDir == "0" || options.outputDir == "false" ? true : false
 
 // work out conserve options from -c 1:ADDA,4:3221
