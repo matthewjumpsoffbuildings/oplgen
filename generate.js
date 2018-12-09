@@ -61,6 +61,7 @@ if(cluster.isMaster) {
 	})
 
 	var w, worker, data = []
+	const WRITE_BLOCK = Math.max(1000, Math.min(20000, numOfSequences/10))
 	const workerListener = function(message) {
 		totalIterations += message.iterations
 		masterCheckForExit()
@@ -76,15 +77,12 @@ if(cluster.isMaster) {
 			totalSequences += message.data.length
 
 			data = data.concat(message.data)
-			if(false && data.length >= 20000){
-				var t = Date.now()
+			if(data.length >= WRITE_BLOCK || data.length + totalSequences >= numOfSequences){
 				var oldCount = countSQL.get()["count(id)"]
 				insertTransation(data)
 				var newCount = countSQL.get()["count(id)"]
 				totalSequences -= data.length - (newCount-oldCount)
 				data = []
-				t2 = Date.now()
-				console.log(t2-t)
 			}
 
 			if(totalSequences < numOfSequences) bar.update(totalSequences/numOfSequences)
