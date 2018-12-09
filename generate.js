@@ -39,18 +39,18 @@ exitHook(() => {
 
 db.prepare(
 	`CREATE TABLE IF NOT EXISTS smiles(
-		id INT PRIMARY KEY
+		id INTEGER PRIMARY KEY,
 		name TEXT UNIQUE,
-		smiles text,
-		score double,
-		miLogP double,
-		TPSA double,
-		natoms double,
-		MW double,
-		nON double,
-		nOHNH double,
-		nrotb double,
-		volume double
+		smiles TEXT,
+		score DOUBLE,
+		miLogP DOUBLE,
+		TPSA DOUBLE,
+		natoms DOUBLE,
+		MW DOUBLE,
+		nON DOUBLE,
+		nOHNH DOUBLE,
+		nrotb DOUBLE,
+		volume DOUBLE
 	)`).run()
 
 

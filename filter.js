@@ -35,33 +35,54 @@ filterBar.update(0)
 
 
 // score the props for each one
-for(i = 0; i<numOfFiles; i++){
-	file = sourceFilenames[i]
-	filename = file.filename
+const paginatedQuery = db.prepare(
+	`SELECT *
+	FROM smiles
+	WHERE score IS NULL
+	ORDER BY id
+	LIMIT 1000`
+)
+const scoreUpdate = db.prepare(`UPDATE smiles SET score = ? WHERE id = ?`)
 
-	for(prop in props){
-		score = 0,
-		val = file[prop]
+var results = paginatedQuery.all(),
+	file, totalProcessed = 0
 
-		if(prop == "miLogP") {
-			if(val >= 1 && val <= 3)
-				score = 1.5 // optimal range
-			else if(val >= -4 && val <= 5)
-				score = 1 // suboptimal range
-			else
-				score = 0 // out of range
+while(results && results.length)//function scoreFunc()
+{
+	for(i = 0; i < results.length; i++){
+		file = results[i]
+		file.score = 0
+		for(prop in props){
+			score = 0,
+			val = file[prop]
+
+			if(prop == "miLogP") {
+				if(val >= 1 && val <= 3)
+					score = 1.5 // optimal range
+				else if(val >= -4 && val <= 5)
+					score = 1 // suboptimal range
+				else
+					score = 0 // out of range
+			}
+			else // everything but logP
+				score = (propsMax[prop] - val)  / (propsMax[prop] - propsMin[prop])
+
+			// make the lipinksi props more important
+			if(prop == "MW" || prop == "nON" || prop == "nOHNH")
+				score *= 1.5
+
+			file.score += score
 		}
-		else // everything but logP
-			score = (propsMax[prop] - val)  / (propsMax[prop] - propsMin[prop])
 
-		// make the lipinksi props more important
-		if(prop == "MW" || prop == "nON" || prop == "nOHNH")
-			score *= 1.5
+		scoreUpdate.run(file.score, file.id)
 
-		file.score += score
+		totalProcessed++
+
 	}
 
-	if(i % 1000 == 0) filterBar.update( (i/numOfFiles)*.5+.5 )
+	filterBar.update( (totalProcessed/numOfFiles) )
+
+	results = paginatedQuery.all()
 }
 
 // finish off the filterBar
@@ -69,11 +90,15 @@ if(filterBar.curr != filterBar.total) filterBar.update(1)
 
 
 // get range ids based on score
-var results
-if(range == number){
-	results = db.prepare(`SELECT id FROM smiles ORDER BY score DESC`).all()
-} else {
-	results = db.prepare(`SELECT id FROM smiles LIMIT ${range} ORDER BY score DESC`).all()
+var filtered
+if(range == number)
+	filtered = db.prepare(`SELECT * FROM smiles ORDER BY score DESC LIMIT ${number}`).all()
+else {
+	filtered = db.prepare(
+		`SELECT * FROM smiles WHERE id IN
+		(SELECT id FROM smiles ORDER BY score DESC LIMIT ${range})
+		ORDER BY RANDOM() LIMIT ${number}`)
+		.all()
 }
 
 // generate stats
@@ -91,7 +116,7 @@ for(prop in props){
 	fileStats += "," + prop
 }
 for(i = 0; i<number; i++){
-	fileStats += "\n" + (i+1) + "," +filtered[i].filename.replace(".smiles", "")
+	fileStats += "\n" + (i+1) + "," +filtered[i].name
 	for(prop in props){
 		val = filtered[i][prop]
 		vals[prop].push(val)
@@ -133,7 +158,7 @@ if(!statsOnly)
 
 	for(i = 0; i < number; i++)
 	{
-		filename = filtered[i].filename.replace(".smiles", "")
+		filename = filtered[i].name
 		k = ""
 		// k = padString+(i+1)
 		// k = k.substr(k.length-padStringLength)
