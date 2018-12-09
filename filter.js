@@ -28,7 +28,7 @@ var file,
 	score, val,
 	spawn, spawnStdErr
 
-console.log(`\nSorting ${numOfFiles} smiles files, selecting ${number} from the top ${range}\n`)
+console.log(`\nScoring druglikeness of ${numOfFiles} smiles files\n`)
 
 filterBar.update(0)
 
@@ -40,15 +40,18 @@ const paginatedQuery = db.prepare(
 	FROM smiles
 	WHERE score IS NULL
 	ORDER BY id
-	LIMIT 1000`
+	LIMIT 2000`
 )
 const scoreUpdate = db.prepare(`UPDATE smiles SET score = ? WHERE id = ?`)
 
 var results = paginatedQuery.all(),
-	file, totalProcessed = 0
+	file, totalProcessed = 0, ids, scores, updateQueryString
 
 while(results && results.length)//function scoreFunc()
 {
+	ids = []
+	scores = []
+
 	for(i = 0; i < results.length; i++){
 		file = results[i]
 		file.score = 0
@@ -74,11 +77,19 @@ while(results && results.length)//function scoreFunc()
 			file.score += score
 		}
 
-		scoreUpdate.run(file.score, file.id)
+		ids.push(file.id)
+		scores.push(file.score)
 
 		totalProcessed++
 
 	}
+
+	updateQueryString = `UPDATE smiles SET score = CASE id `
+	for(i = 0; i < ids.length; i++){
+		updateQueryString += `WHEN ${ids[i]} THEN ${scores[i]} `
+	}
+	updateQueryString += `END WHERE id IN (${ids.join(",")})`
+	db.prepare(updateQueryString).run()
 
 	filterBar.update( (totalProcessed/numOfFiles) )
 
@@ -89,20 +100,25 @@ while(results && results.length)//function scoreFunc()
 if(filterBar.curr != filterBar.total) filterBar.update(1)
 
 
+console.log(`\nScored ${numOfFiles} smiles, selecting ${number} from the top ${range}`)
+
 // get range ids based on score
 var filtered
 if(range == number)
-	filtered = db.prepare(`SELECT * FROM smiles ORDER BY score DESC LIMIT ${number}`).all()
+	filtered = db.prepare(
+		`SELECT name, ${Object.keys(props).join(",")}
+		FROM smiles ORDER BY score DESC LIMIT ${number}`)
+		.all()
 else {
 	filtered = db.prepare(
-		`SELECT * FROM smiles WHERE id IN
+		`SELECT name, ${Object.keys(props).join(",")} FROM smiles WHERE id IN
 		(SELECT id FROM smiles ORDER BY score DESC LIMIT ${range})
 		ORDER BY RANDOM() LIMIT ${number}`)
 		.all()
 }
 
 // generate stats
-console.log(`\nSorted ${numOfFiles} smiles, generating stats`)
+console.log(`\nSelected ${number} smiles, generating stats`)
 
 const stats = require('stats-lite')
 const vals = {}, max = {}, min = {}
@@ -116,13 +132,13 @@ for(prop in props){
 	fileStats += "," + prop
 }
 for(i = 0; i<number; i++){
-	fileStats += "\n" + (i+1) + "," +filtered[i].name
+	// fileStats += "\n" + (i+1) + "," +filtered[i].name
 	for(prop in props){
 		val = filtered[i][prop]
 		vals[prop].push(val)
 		if(!max.hasOwnProperty(prop) || max[prop] < val) max[prop] = val
 		if(!min.hasOwnProperty(prop) || min[prop] > val) min[prop] = val
-		fileStats += "," + filtered[i][prop]
+		// fileStats += "," + filtered[i][prop]
 	}
 }
 
