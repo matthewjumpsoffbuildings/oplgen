@@ -2,6 +2,7 @@
 
 const startTime = Date.now()
 const cluster = require('cluster')
+const child_process = require('child_process')
 const workers = []
 
 // Globals
@@ -27,6 +28,7 @@ const { numOfSequences, linearMaximum, bar, method, maximum, props,
 
 
 // Master setup
+var dbWorker
 if(cluster.isMaster) {
 
 	bar.update(0)
@@ -54,11 +56,6 @@ if(cluster.isMaster) {
 	db.prepare(`INSERT OR IGNORE INTO history VALUES (0, CURRENT_TIMESTAMP)`).run()
 	db.prepare(`UPDATE history SET last_gen = CURRENT_TIMESTAMP`).run()
 
-	const countSQL = db.prepare(`SELECT count(id) FROM smiles`)
-	const insertSQL = db.prepare(`INSERT or IGNORE INTO smiles (${Object.keys(props).join(", ")}) VALUES (@${Object.keys(props).join(", @")})`);
-	const insertTransation = db.transaction((smiles) => {
-		for (const s of smiles) insertSQL.run(s)
-	})
 
 	var w, worker, data = []
 	const WRITE_BLOCK = Math.max(1000, Math.min(20000, numOfSequences/10))
@@ -74,18 +71,12 @@ if(cluster.isMaster) {
 			noNewFoundTime = Date.now() - lastUniqueTime
 
 		if(message.data){
-			totalSequences += message.data.length
-
 			data = data.concat(message.data)
 			if(data.length >= WRITE_BLOCK || data.length + totalSequences >= numOfSequences){
-				var oldCount = countSQL.get()["count(id)"]
-				insertTransation(data)
-				var newCount = countSQL.get()["count(id)"]
-				totalSequences -= data.length - (newCount-oldCount)
+				dbWorker.send({data})
+				message.data = null
 				data = []
 			}
-
-			if(totalSequences < numOfSequences) bar.update(totalSequences/numOfSequences)
 		}
 
 		// update all workers
@@ -95,11 +86,17 @@ if(cluster.isMaster) {
 	}
 
 	const numCPUs = require('os').cpus().length
-	for (let i = 0; i < numCPUs-1; i++) {
+	for (let i = 0; i < numCPUs-2; i++) {
 		var worker = cluster.fork()
 		worker.on('message', workerListener)
 		workers.push(worker)
 	}
+
+	dbWorker = child_process.fork('./utils/db')
+	dbWorker.on('message', function(message){
+		if(message.newSequences) totalSequences += message.newSequences
+		if(totalSequences < numOfSequences) bar.update(totalSequences/numOfSequences)
+	})
 }
 
 function keepRunning(){
@@ -110,9 +107,11 @@ function keepRunning(){
 
 var exited
 function masterCheckForExit(){
+	if(!cluster.isMaster) return
 	if(keepRunning()) return
 	if(exited) return
 
+	dbWorker.send({exit: true})
 	for(var w in workers){
 		workers[w].send({exit: true})
 	}
@@ -127,7 +126,7 @@ function masterCheckForExit(){
 
 	const endTime = Date.now()
 	const duration = (endTime - startTime)/1000
-	const used = process.memoryUsage().heapUsed / 1024 / 1024
+	const used = process.memoryUsage().rss / 1024 / 1024
 	console.log(`The script took ${duration}s and used approximately ${Math.round(used * 100) / 100} MB memory`)
 }
 
@@ -161,7 +160,10 @@ if(!cluster.isMaster)
 
 		if(keepRunning()){
 			generate()
-			process.send({iterations: 1000})
+			global.gc()
+			console.log('Random Gen Mem: ',
+				process.memoryUsage().rss/1024/1024
+			)
 		}
 		else
 			clearInterval(iterationInterval)

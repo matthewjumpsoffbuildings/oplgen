@@ -2,15 +2,12 @@ const getConserved = require('./getConserved')
 const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, subunits, subunitNames,
 	outputDirectory, subunitsLength, TYPE_CYCLIC, ringClosureDigit, props } = require('./config')
 
-var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
-	filename, subunitIndex, data, output, currentSequences
-
 const checkFilenameQuery = db.prepare(`SELECT name FROM smiles WHERE name = ?`)
 
 module.exports = function()
 {
-	currentSequences = {}
-	output = []
+	var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
+		filename, subunitIndex, data, output = []
 
 	for(k = 0; k < iterationBlock; k++){
 
@@ -45,14 +42,10 @@ module.exports = function()
 			sequenceHashArray.sort()
 			sequenceIndexString = sequenceHashArray[0]
 			sequenceIndexArray = sequenceIndexString.split(",")
-
-			// check against any generated in the current iteration block (eg not in the db yet)
-			if(currentSequences[sequenceIndexString]) continue
 		}
 
 		// generate output string and filename and prop totals
 		data = Object.assign({}, props)
-		currentSequences[sequenceIndexString] = data
 		output.push(data)
 		for(i = 0; i<sequenceLength; i++){
 			sequenceString += subunits[sequenceIndexArray[i]].smiles
@@ -83,10 +76,13 @@ module.exports = function()
 	if(!output.length) return
 
 	// send results to master process
-	process.send({
+	var dataToSend = {
 		iterations: k,
 		data: output
-	})
+	}
+	// process.send(dataToSend)
 
-	currentSequences = output = null
+	dataToSend.data = null
+	dataToSend = null
+	output = null
 }
