@@ -7,6 +7,8 @@ const {numOfSequences, sequenceType, sequenceLength, delimiter, outputDirectory,
 var indexes = [], conserved, sequenceIndexArray, sequenceIndexString, sequenceHashArray,
 	k, i, sequenceString, filename, data
 
+const checkFilenameQuery = db.prepare(`SELECT name FROM smiles WHERE name = ?`)
+
 if(sequenceType == TYPE_CYCLIC && method == METHOD_SEQUENTIAL){
 	for(i = 0; i<sequenceLength; i++){
 		conserved = getConserved(i)
@@ -88,7 +90,7 @@ module.exports = function(){
 		// output stage for current sequence
 
 		// check if entry already exists
-		var res = db.prepare(`SELECT name FROM smiles WHERE name = "${filename}"`).get()
+		var res = checkFilenameQuery.get(filename)
 		if(res) continue
 
 		// add terminators

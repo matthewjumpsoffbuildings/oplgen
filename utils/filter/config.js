@@ -30,13 +30,17 @@ const props = {
 }
 
 // get max and min from db
-console.log(`\nGetting max/min values from the database`)
+console.log(`\nGetting max/min values from the database\n`)
 const propsMax = {}
 const propsMin = {}
 for(var prop in props){
+	process.stdout.write(`${prop} -`)
 	propsMax[prop] = db.prepare(`SELECT max(${prop}) from smiles`).get()[`max(${prop})`]
+	process.stdout.write(` max:${propsMax[prop]},`)
 	propsMin[prop] = db.prepare(`SELECT min(${prop}) from smiles`).get()[`min(${prop})`]
+	process.stdout.write(` min:${propsMin[prop]}, `)
 }
+console.log('')
 
 const numOfFiles = db.prepare('SELECT count(*) from smiles').get()['count(*)']
 const number = options.number > 0 ? Math.min(options.number, numOfFiles) : numOfFiles
@@ -50,12 +54,12 @@ const subunits = JSON.parse(subunitsString)
 // create a new progress bar instance
 const ProgressBar = require('progress')
 const filterBar = new ProgressBar(
-	'Progress :bar :percent :current/:total smiles sorted ',
+	'Progress :bar :percent :current/:total smiles scored ',
 	{ total: numOfFiles, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
 const obabelBar = new ProgressBar(
-	'Progress :bar :percent :current/:total smiles processed ',
+	'Progress :bar :percent :current/:total smiles converted ',
 	{ total: number, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 

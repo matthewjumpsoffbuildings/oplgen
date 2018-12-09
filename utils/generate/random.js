@@ -3,19 +3,19 @@ const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maxi
 	outputDirectory, subunitsLength, TYPE_CYCLIC, ringClosureDigit, props } = require('./config')
 
 var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
-	filename, subunitIndex, data
+	filename, subunitIndex, data, output, currentSequences
+
+const checkFilenameQuery = db.prepare(`SELECT name FROM smiles WHERE name = ?`)
 
 module.exports = function()
 {
-	// store sql values for sqlite batch output here
-	var output = [], currentSequenceHashes = {}
+	currentSequences = {}
+	output = []
 
 	for(k = 0; k < iterationBlock; k++){
 
 		// if we already have enough sequences dont bother
-		if(sequences >= numOfSequences) break
-
-		iterations++
+		if(totalSequences >= numOfSequences) break
 
 		sequenceIndexArray = []
 		sequenceHashArray = []
@@ -47,12 +47,13 @@ module.exports = function()
 			sequenceIndexArray = sequenceIndexString.split(",")
 
 			// check against any generated in the current iteration block (eg not in the db yet)
-			if(currentSequenceHashes[sequenceIndexString]) continue
-			currentSequenceHashes[sequenceIndexString] = true
+			if(currentSequences[sequenceIndexString]) continue
 		}
 
 		// generate output string and filename and prop totals
 		data = Object.assign({}, props)
+		currentSequences[sequenceIndexString] = data
+		output.push(data)
 		for(i = 0; i<sequenceLength; i++){
 			sequenceString += subunits[sequenceIndexArray[i]].smiles
 			filename += subunitNames[sequenceIndexArray[i]]
@@ -62,9 +63,9 @@ module.exports = function()
 			}
 		}
 
-		// check if entry already exists
-		var res = db.prepare(`SELECT name FROM smiles WHERE name = "${filename}"`).get()
-		if(res) continue
+		// // check if entry already exists
+		// var res = checkFilenameQuery.get(filename)
+		// if(res) continue
 
 		// add terminators etc
 		if(sequenceType == TYPE_CYCLIC){
@@ -77,17 +78,15 @@ module.exports = function()
 		sequenceString += ' '+filename
 		data.smiles = '"'+sequenceString+'"'
 		data.name = '"'+filename+'"'
-
-		// keep track of unique sequences and time since last unique
-		sequences++
-		lastUniqueTime = Date.now()
-
-		// add data to output values
-		output.push( "(" + Object.values(data).join(", ") + ")")
 	}
 
-	// output this batch to sqlite, if we have any results
 	if(!output.length) return
-	db.prepare(`INSERT or IGNORE INTO smiles (${Object.keys(props).join(", ")}) VALUES ${output}`).run()
-	output = currentSequenceHashes = null
+
+	// send results to master process
+	process.send({
+		iterations: k,
+		data: output
+	})
+
+	currentSequences = output = null
 }

@@ -5,7 +5,12 @@ require('../tty')
 
 const cannotDiverge = { 'sequenceLength':1, 'linear':1, 'conserve':1 }
 var params = false
-if(fs.existsSync(`.params`)) params = JSON.parse( fs.readFileSync(`.params`) )
+// if(fs.existsSync(`.params`)) params = JSON.parse( fs.readFileSync(`.params`) )
+
+const cluster = require('cluster')
+function consoleLog(val){
+	if(cluster.isMaster) console.log(val)
+}
 
 const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
@@ -28,29 +33,16 @@ if(params){
 		}
 	}
 	if(divergent){
-		console.log(`\nYou have run oplgen previously in this folder with the following arguments set to different values:`)
-		console.log(message)
-		console.log(`\nThese arguments have been restored to their previous values. Next time you run oplgen in this folder you should omit them`)
-		console.log(`If you would like to generate different chains, make a new folder for them and run oplgen there\n`)
+		consoleLog(`\nYou have run oplgen previously in this folder with the following arguments set to different values:`)
+		consoleLog(message)
+		consoleLog(`\nThese arguments have been restored to their previous values. Next time you run oplgen in this folder you should omit them`)
+		consoleLog(`If you would like to generate different chains, make a new folder for them and run oplgen there\n`)
 	}
 }
 // store options for next run
 params = Object.assign(params, options)
 fs.writeFileSync(`.params`, JSON.stringify(params, null, 2))
 
-
-const props = {
-	name: 0,
-	smiles: 0,
-	miLogP: 0,
-	TPSA: 0,
-	natoms: 0,
-	MW: 0,
-	nON: 0,
-	nOHNH: 0,
-	nrotb: 0,
-	volume: 0
-}
 
 const TYPE_LINEAR = 'linear'
 const TYPE_CYCLIC = 'cyclo'
@@ -96,7 +88,7 @@ const subunitsLength = subunits.length
 
 // if we dont have enough subunits, dont bother
 if(subunitsLength < 1){
-	console.log(`No subunit SMILES files found in the specified '${subunitsFile}' file`)
+	consoleLog(`No subunit SMILES files found in the specified '${subunitsFile}' file`)
 	process.exit()
 }
 
@@ -116,13 +108,13 @@ const method = methodRequested == METHOD_SEQUENTIAL || numOfSequences == maximum
 if(!dontOutput) fs.ensureDirSync(outputDirectory)
 
 // log out the current settings
-console.log(`\nGenerating ${numOfSequences} ${sequenceType} sequences of length ${sequenceLength}, using the ${method} method`)
-console.log(`Could generate up to ${linearMaximum} linear sequences and ${cyclicMaximum} cyclic sequences with the current sequence length and settings`)
-if(numRequested > 0 && numRequested != numOfSequences) console.log(`You requested ${numRequested} but only ${maximum} unique sequences can be generated with the current settings`)
-if(sequenceType == TYPE_CYCLIC) console.log(`Using ${ringClosureDigit} as the ring closure digit`)
-if(conserved.length) console.log(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
-console.log(`\nUsing subunit SMILES from the '${subunitsFile}' file (found ${subunitsLength} subunits)`)
-if(!dontOutput) console.log(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
+consoleLog(`\nGenerating ${numOfSequences} ${sequenceType} sequences of length ${sequenceLength}, using the ${method} method`)
+consoleLog(`Could generate up to ${linearMaximum} linear sequences and ${cyclicMaximum} cyclic sequences with the current sequence length and settings`)
+if(numRequested > 0 && numRequested != numOfSequences) consoleLog(`You requested ${numRequested} but only ${maximum} unique sequences can be generated with the current settings`)
+if(sequenceType == TYPE_CYCLIC) consoleLog(`Using ${ringClosureDigit} as the ring closure digit`)
+if(conserved.length) consoleLog(`Conserving subunits at the following positions: ${options.conserve.split(',').join(', ')}`)
+consoleLog(`\nUsing subunit SMILES from the '${subunitsFile}' file (found ${subunitsLength} subunits)`)
+if(!dontOutput) consoleLog(`Outputting SMILES files into the '${outputDirectory}' folder\n`)
 
 // create a new progress bar instance
 const ProgressBar = require('progress')
@@ -156,6 +148,6 @@ module.exports = {
 	subunitNames,
 	conserved,
 	bar,
-	props,
+	props: require('../props'),
 	params
 }
