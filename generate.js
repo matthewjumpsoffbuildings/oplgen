@@ -30,9 +30,16 @@ const generate = method == METHOD_SEQUENTIAL ?
 bar.update(0)
 
 
-global.db = require('better-sqlite3')('smiles.db')
+global.db = require('better-sqlite3')('smiles.sqlite')
+// add exit hook for closing db
+const exitHook = require('exit-hook')
+exitHook(() => {
+	db.close()
+})
+
 db.prepare(
 	`CREATE TABLE IF NOT EXISTS smiles(
+		id INT PRIMARY KEY
 		name TEXT UNIQUE,
 		smiles text,
 		score double,

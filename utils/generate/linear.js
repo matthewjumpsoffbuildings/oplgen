@@ -15,6 +15,8 @@ if(sequenceType == TYPE_LINEAR && method == METHOD_SEQUENTIAL){
 }
 
 module.exports = function(){
+	// TODO convert to sqlite
+	return
 	for(k = 0; k < iterationBlock; k++){
 		// if we already have enough sequences dont bother
 		if(sequences >= numOfSequences || iterations > linearMaximum) return

@@ -1,19 +1,6 @@
 const getConserved = require('./getConserved')
 const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, subunits, subunitNames,
-	outputDirectory, subunitsLength, TYPE_CYCLIC, ringClosureDigit} = require('./config')
-
-const props = {
-	name: "",
-	smiles: "",
-	miLogP: 0,
-	TPSA: 0,
-	natoms: 0,
-	MW: 0,
-	nON: 0,
-	nOHNH: 0,
-	nrotb: 0,
-	volume: 0
-}
+	outputDirectory, subunitsLength, TYPE_CYCLIC, ringClosureDigit, props } = require('./config')
 
 var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
 	filename, subunitIndex, data
@@ -21,7 +8,7 @@ var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceSt
 module.exports = function()
 {
 	// store sql values for sqlite batch output here
-	var output = []
+	var output = [], currentSequenceHashes = {}
 
 	for(k = 0; k < iterationBlock; k++){
 
@@ -49,7 +36,7 @@ module.exports = function()
 
 		// if we are in cyclic mode, generate all cyclic variations so they arent repeated either
 		if(sequenceType == TYPE_CYCLIC){
-			for(i = 0; i <sequenceLength; i++){
+			for(i = 0; i < sequenceLength; i++){
 				sequenceIndexArray.unshift(sequenceIndexArray.pop())
 				sequenceHashArray.push(sequenceIndexArray.join(","))
 			}
@@ -58,6 +45,10 @@ module.exports = function()
 			sequenceHashArray.sort()
 			sequenceIndexString = sequenceHashArray[0]
 			sequenceIndexArray = sequenceIndexString.split(",")
+
+			// check against any generated in the current iteration block (eg not in the db yet)
+			if(currentSequenceHashes[sequenceIndexString]) continue
+			currentSequenceHashes[sequenceIndexString] = true
 		}
 
 		// generate output string and filename and prop totals
@@ -72,8 +63,8 @@ module.exports = function()
 		}
 
 		// check if entry already exists
-		if(db.prepare(`SELECT name FROM smiles WHERE name = ?`).get(filename))
-			continue
+		var res = db.prepare(`SELECT name FROM smiles WHERE name = "${filename}"`).get()
+		if(res) continue
 
 		// add terminators etc
 		if(sequenceType == TYPE_CYCLIC){
@@ -97,6 +88,6 @@ module.exports = function()
 
 	// output this batch to sqlite, if we have any results
 	if(!output.length) return
-	db.prepare(`INSERT INTO smiles (${Object.keys(props).join(", ")}) VALUES ${output}`).run()
-	output = null
+	db.prepare(`INSERT or IGNORE INTO smiles (${Object.keys(props).join(", ")}) VALUES ${output}`).run()
+	output = currentSequenceHashes = null
 }

@@ -3,24 +3,20 @@
 const fs = require('fs-extra')
 const { spawnSync } = require('child_process')
 
+global.db = require('better-sqlite3')('smiles.sqlite')
+// add exit hook for closing db
+const exitHook = require('exit-hook')
+exitHook(() => {
+	db.close()
+})
+
 const startTime = Date.now()
 
 const {
-	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter, filterBar, obabelBar, number, range, subunits, statsOnly
+	sourceFolder, sourceFilenames, numOfFiles, outputFolder, delimiter,
+	filterBar, obabelBar, number, range, subunits, statsOnly,
+	props, propsMax, propsMin
 } = require('./utils/filter/config')
-
-const props = {
-	miLogP: 0,
-	TPSA: 0,
-	natoms: 0,
-	MW: 0,
-	nON: 0,
-	nOHNH: 0,
-	nrotb: 0,
-	volume: 0
-}
-const propsMax = {}
-const propsMin = {}
 
 var file,
 	filename,
@@ -36,32 +32,7 @@ console.log(`\nSorting ${numOfFiles} smiles files, selecting ${number} from the 
 
 filterBar.update(0)
 
-// calculate the props for each one
-for(i = 0; i<numOfFiles; i++){
 
-	filename = sourceFilenames[i]
-	filenameSubunits = filename.replace(/^(cyclo|linear)\.\d+\./, "").replace(/\.smiles$/, "")
-	filenameSplit = filenameSubunits.split(delimiter)
-	data = Object.assign({ score: 0, filename: filename }, props)
-
-	for(k = 0; k<filenameSplit.length; k++){
-
-		subunit = subunits[filenameSplit[k]]
-
-		for(prop in props){
-			data[prop] += subunit[prop]
-		}
-	}
-
-	for(prop in props){
-		if(!propsMax.hasOwnProperty(prop) || propsMax[prop] < data[prop]) propsMax[prop] = data[prop]
-		if(!propsMin.hasOwnProperty(prop) || propsMin[prop] > data[prop]) propsMin[prop] = data[prop]
-	}
-
-	sourceFilenames[i] = data
-
-	if(i % 1000 == 0) filterBar.update( (i/numOfFiles)*.5 )
-}
 
 // score the props for each one
 for(i = 0; i<numOfFiles; i++){
@@ -97,20 +68,13 @@ for(i = 0; i<numOfFiles; i++){
 if(filterBar.curr != filterBar.total) filterBar.update(1)
 
 
-// sort based on score
-sourceFilenames.sort(function(a, b){
-	return b.score - a.score
-})
-
-// get filtered results
-const _ = require('underscore')
-const rangeArray = sourceFilenames.splice(0, range)
-const filtered = rangeArray.length > number ? _.sample(rangeArray, number) : rangeArray
-
-// sort filtered again based on score
-filtered.sort(function(a, b){
-	return b.score - a.score
-})
+// get range ids based on score
+var results
+if(range == number){
+	results = db.prepare(`SELECT id FROM smiles ORDER BY score DESC`).all()
+} else {
+	results = db.prepare(`SELECT id FROM smiles LIMIT ${range} ORDER BY score DESC`).all()
+}
 
 // generate stats
 console.log(`\nSorted ${numOfFiles} smiles, generating stats`)

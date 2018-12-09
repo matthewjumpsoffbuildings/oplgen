@@ -35,9 +35,22 @@ if(params){
 	}
 }
 // store options for next run
-fs.writeFileSync(`.params`, JSON.stringify(options, null, 2))
+params = Object.assign(params, options)
+fs.writeFileSync(`.params`, JSON.stringify(params, null, 2))
 
 
+const props = {
+	name: 0,
+	smiles: 0,
+	miLogP: 0,
+	TPSA: 0,
+	natoms: 0,
+	MW: 0,
+	nON: 0,
+	nOHNH: 0,
+	nrotb: 0,
+	volume: 0
+}
 
 const TYPE_LINEAR = 'linear'
 const TYPE_CYCLIC = 'cyclo'
@@ -142,5 +155,7 @@ module.exports = {
 	subunitsLength,
 	subunitNames,
 	conserved,
-	bar
+	bar,
+	props,
+	params
 }

@@ -18,11 +18,28 @@ const sourceFolder = "smiles"
 const outputFolder = "mol2"
 const statsOnly = options.stats
 
-console.log("\nLoading smiles files for sorting")
-const sourceFilenames = fs.readdirSync(sourceFolder)
-const numOfFiles = sourceFilenames.length
+const props = {
+	miLogP: 0,
+	TPSA: 0,
+	natoms: 0,
+	MW: 0,
+	nON: 0,
+	nOHNH: 0,
+	nrotb: 0,
+	volume: 0
+}
 
-const number = options.number > 0 ? Math.min(options.number, sourceFilenames.length) : sourceFilenames.length
+// get max and min from db
+console.log(`\nGetting max/min values from the database`)
+const propsMax = {}
+const propsMin = {}
+for(var prop in props){
+	propsMax[prop] = db.prepare(`SELECT max(${prop}) from smiles`).get()[`max(${prop})`]
+	propsMin[prop] = db.prepare(`SELECT min(${prop}) from smiles`).get()[`min(${prop})`]
+}
+
+const numOfFiles = db.prepare('SELECT count(*) from smiles').get()['count(*)']
+const number = options.number > 0 ? Math.min(options.number, numOfFiles) : numOfFiles
 const range = options.range > 0 ? Math.max(options.range, number) : (options.range == 0 ? numOfFiles : number)
 
 const defaultJSONPath = require('../subunits-path')
@@ -34,7 +51,7 @@ const subunits = JSON.parse(subunitsString)
 const ProgressBar = require('progress')
 const filterBar = new ProgressBar(
 	'Progress :bar :percent :current/:total smiles sorted ',
-	{ total: sourceFilenames.length, incomplete: '░', complete: '█', renderThrottle: 200 }
+	{ total: numOfFiles, incomplete: '░', complete: '█', renderThrottle: 200 }
 )
 
 const obabelBar = new ProgressBar(
@@ -45,13 +62,14 @@ const obabelBar = new ProgressBar(
 module.exports = {
 	number,
 	range,
-	sourceFolder,
-	sourceFilenames,
 	numOfFiles,
 	outputFolder,
 	subunits,
 	delimiter,
 	filterBar,
 	obabelBar,
-	statsOnly
+	statsOnly,
+	props,
+	propsMax,
+	propsMin
 }

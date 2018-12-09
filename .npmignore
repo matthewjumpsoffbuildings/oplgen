@@ -1,6 +1,6 @@
 .DS_Store
 smiles
-smile.db
+smiles.sqlite
 mol2
 output.mol2
 docked.mol2

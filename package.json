@@ -20,6 +20,7 @@
   "dependencies": {
     "better-sqlite3": "^5.0.1",
     "command-line-args": "^5.0.2",
+    "exit-hook": "^2.0.0",
     "fs-extra": "^7.0.1",
     "get-divisors": "^1.0.0",
     "number-theory": "^1.1.0",
