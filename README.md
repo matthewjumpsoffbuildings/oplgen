@@ -70,7 +70,7 @@ The following options are available:
 	- How long should each generated chain of subunits be?
 - `-s --subunits` - default: [`subunits.json`](./subunits.json)
 	- Where should the generator look for the subunits JSON data?
-	- By default, the program has a subunits JSON file with 32 naturally occuring Microcystin subunits in its install directory
+	- By default, the program has a subunits JSON file with 32 naturally occurring Microcystin subunits in its install directory
 	- If no `subunits.json` file is present, or if you dont pass anything for this argument, the [default subunits JSON](./subunits.json) is used
 	- If you pass a reference to a different JSON for this argument, it will attempt to find the file you specified, else it will fall back to using the default JSON
 	- If you want to customise the default subunits JSON, you can use the [`opl-subunits`](#opl-subunits) command. This will insert the default JSON into the current working directory, for you to add/remove/modify subunits as needed
