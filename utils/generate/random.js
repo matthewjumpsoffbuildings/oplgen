@@ -1,18 +1,34 @@
 const getConserved = require('./getConserved')
-const {numOfSequences, sequenceType, sequenceLength, delimiter, dontOutput, maximum, subunits, subunitNames,
-	outputDirectory, subunitsLength, TYPE_CYCLIC, ringClosureDigit, props } = require('./config')
+const { TYPE_CYCLIC, ITERATION_BLOCK } = require('./consts')
 
-const checkFilenameQuery = db.prepare(`SELECT name FROM smiles WHERE name = ?`)
+// const checkFilenameQuery = db.prepare(`SELECT name FROM smiles WHERE name = ?`)
 
-module.exports = function()
+var options
+var totalSequences = 0
+var totalIterations = 0
+var lastUniqueTime = 0
+
+
+process.on('message', (message) => {
+	if(message.totalSequences) totalSequences = message.totalSequences
+	if(message.totalIterations) totalIterations = message.totalIterations
+	if(message.lastUniqueTime) lastUniqueTime = message.lastUniqueTime
+	if(message.options) setOptions(message.options)
+	if(message.iterate) iterate()
+})
+
+function setOptions(options){
+	for(var i in options){
+		global[i] = options[i]
+	}
+}
+
+function iterate()
 {
-	var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
-		filename, subunitIndex, data, output = []
+	let k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
+		filename, subunitIndex, data = {}, output = []
 
-	for(k = 0; k < iterationBlock; k++){
-
-		// if we already have enough sequences dont bother
-		if(totalSequences >= numOfSequences) break
+	for(k = 0; k < ITERATION_BLOCK; k++){
 
 		sequenceIndexArray = []
 		sequenceHashArray = []
@@ -69,20 +85,15 @@ module.exports = function()
 
 		// add and smiles and metadata
 		sequenceString += ' '+filename
-		data.smiles = '"'+sequenceString+'"'
+		data.smiles = ""// '"'+sequenceString+'"'
 		data.name = '"'+filename+'"'
 	}
 
 	if(!output.length) return
 
 	// send results to master process
-	var dataToSend = {
+	process.send({
 		iterations: k,
 		data: output
-	}
-	// process.send(dataToSend)
-
-	dataToSend.data = null
-	dataToSend = null
-	output = null
+	})
 }
