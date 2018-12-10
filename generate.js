@@ -160,10 +160,10 @@ if(!cluster.isMaster)
 
 		if(keepRunning()){
 			generate()
-			global.gc()
-			console.log('Random Gen Mem: ',
-				process.memoryUsage().rss/1024/1024
-			)
+			// global.gc()
+			// console.log('Random Gen Mem: ',
+			// 	process.memoryUsage().rss/1024/1024
+			// )
 		}
 		else
 			clearInterval(iterationInterval)
