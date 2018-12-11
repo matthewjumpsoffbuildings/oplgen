@@ -12,14 +12,14 @@ Molecular Biology and Biotechnology Research Cluster
 In collaboration with  
 Chinese Academy of Sciences  
 Yantai Institute of Coastal Zone Research  
-Department of Molecular Phycology
+Laboratory of Molecular Phycology
 
 ## Installation
 
 Before installing, ensure you have the following requirements
 
 - [node+npm](https://nodejs.org/en/download/) (recent versions)
-- [openbabel](http://openbabel.org/wiki/Category:Installation) (for mol2 conversion)
+- [OpenBabel](http://openbabel.org/wiki/Category:Installation) (for ligand file preparation)
 
 Once you have the requirements, run the following in a cmd/terminal:
 
