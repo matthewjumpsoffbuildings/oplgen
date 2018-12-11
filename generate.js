@@ -24,7 +24,7 @@ const {
 = require('./utils/generate/config')
 
 // set up db worker
-dbWorker = child_process.fork('./utils/db')
+const dbWorker = child_process.fork('./utils/db')
 dbWorker.on('message', function(message){
 	if(message.newSequences) {
 		totalSequences += message.newSequences
