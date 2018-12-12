@@ -104,8 +104,6 @@ const numOfSequences = numRequested < 1 ? maximum : Math.min(maximum, numRequest
 const method = methodRequested == METHOD_SEQUENTIAL || numOfSequences == maximum ?
 	METHOD_SEQUENTIAL : METHOD_RANDOM
 
-// make sure output directory exists
-if(!dontOutput) fs.ensureDirSync(outputDirectory)
 
 // log out the current settings
 console.log(`\nGenerating ${numOfSequences} ${sequenceType} sequences of length ${sequenceLength}, using the ${method} method`)

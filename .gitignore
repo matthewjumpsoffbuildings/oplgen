@@ -9,3 +9,4 @@ stats-*.txt
 dock-stats.txt
 .params
 node_modules
+.temp

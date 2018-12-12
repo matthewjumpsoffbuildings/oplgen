@@ -1,18 +1,19 @@
 const getConserved = require('./getConserved')
-const { TYPE_CYCLIC, ITERATION_BLOCK } = require('./consts')
+const { TYPE_CYCLIC } = require('./consts')
+const props = require('../props')
 
-// const checkFilenameQuery = db.prepare(`SELECT name FROM smiles WHERE name = ?`)
+const db = require('better-sqlite3')('smiles.sqlite')
+const exitHook = require('exit-hook')
+exitHook(() => { db.close() })
 
-var options
-var totalSequences = 0
-var totalIterations = 0
-var lastUniqueTime = 0
+const insertSQL = db.prepare(`INSERT or IGNORE INTO smiles (${Object.keys(props).join(", ")}) VALUES (@${Object.keys(props).join(", @")})`);
+const insertTransation = db.transaction((smiles) => {
+	for (const s of smiles) insertSQL.run(s)
+})
 
+const ITERATION_BLOCK = 4000
 
 process.on('message', (message) => {
-	if(message.totalSequences) totalSequences = message.totalSequences
-	if(message.totalIterations) totalIterations = message.totalIterations
-	if(message.lastUniqueTime) lastUniqueTime = message.lastUniqueTime
 	if(message.options) setOptions(message.options)
 	if(message.iterate) iterate()
 })
@@ -23,18 +24,20 @@ function setOptions(options){
 	}
 }
 
+var k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
+		name, subunitIndex, res, data = {}, output = [], written = false, oldCount, newCount
+
 function iterate()
 {
-	let k, i, sequenceIndexArray, sequenceHashArray, sequenceIndexString, sequenceString,
-		filename, subunitIndex, data = {}, output = []
+	const block = ITERATION_BLOCK + (Math.random()*ITERATION_BLOCK)
 
-	for(k = 0; k < ITERATION_BLOCK; k++){
+	for(k = 0; k < block; k++){
 
 		sequenceIndexArray = []
 		sequenceHashArray = []
 		sequenceIndexString = ""
 		sequenceString = ""
-		filename = sequenceType+"."+sequenceLength+"."
+		name = sequenceType+"."+sequenceLength+"."
 
 		// generate a new random sequence, maintaining conserved positions
 		for(i = 0; i<sequenceLength; i++){
@@ -60,21 +63,21 @@ function iterate()
 			sequenceIndexArray = sequenceIndexString.split(",")
 		}
 
-		// generate output string and filename and prop totals
-		data = Object.assign({}, props)
-		output.push(data)
-		for(i = 0; i<sequenceLength; i++){
+		// generate name
+		for(i = 0; i < sequenceLength; i++){
+			name += subunitNames[sequenceIndexArray[i]]
+			if(i<sequenceLength-1) name += delimiter
+		}
+
+		// generate output string and prop totals
+		data = {}
+		for(prop in props){ data[prop] = props[prop] }
+		for(i = 0; i < sequenceLength; i++){
 			sequenceString += subunits[sequenceIndexArray[i]].smiles
-			filename += subunitNames[sequenceIndexArray[i]]
-			if(i<sequenceLength-1) filename += delimiter
 			for(prop in props){
 				data[prop] += subunits[sequenceIndexArray[i]][prop]
 			}
 		}
-
-		// // check if entry already exists
-		// var res = checkFilenameQuery.get(filename)
-		// if(res) continue
 
 		// add terminators etc
 		if(sequenceType == TYPE_CYCLIC){
@@ -84,16 +87,28 @@ function iterate()
 			sequenceString += "O"
 
 		// add and smiles and metadata
-		sequenceString += ' '+filename
-		data.smiles = ""// '"'+sequenceString+'"'
-		data.name = '"'+filename+'"'
+		sequenceString += ' '+name
+		data.smiles = '"'+sequenceString+'"'
+		data.name = '"'+name+'"'
+
+		output.push(data)
 	}
 
-	if(!output.length) return
+	written = false, newSequences = 0
+	while(!written){
+		try {
+			insertTransation(output)
+			written = true
+		} catch(e) {
+			written = false
+		}
+	}
 
-	// send results to master process
+	output = []
+
 	process.send({
-		iterations: k,
-		data: output
+		iterations: k
 	})
+
+	// console.log("gen", process.pid, process.memoryUsage().rss / 1024 / 1024)
 }

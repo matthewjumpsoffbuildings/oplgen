@@ -1,5 +1,3 @@
-const {conserved, subunitsHash } = require('./config')
-
 module.exports = function(i){
 	let index = -1
 	if(conserved[i]) {
